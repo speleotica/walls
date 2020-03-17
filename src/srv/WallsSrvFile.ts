@@ -952,6 +952,6 @@ export const defaultSrvSettings = (): SrvSettings => ({
   segment: null,
 })
 
-export type WallsSurveyFile = {
+export type WallsSrvFile = {
   lines: SrvLine[]
 }

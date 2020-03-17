@@ -22,7 +22,7 @@ import {
   VarianceAssignment,
   VarianceAssignmentType,
   Comment,
-  WallsSurveyFile,
+  WallsSrvFile,
   defaultSrvSettings,
 } from './WallsSrvFile'
 import { isEqual } from 'lodash'
@@ -708,18 +708,18 @@ export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {
   }
 }
 
-export default function formatWallsSurveyFile(file: WallsSurveyFile): string
-export default function formatWallsSurveyFile(
-  file: WallsSurveyFile,
+export default function formatWallsSrvFile(file: WallsSrvFile): string
+export default function formatWallsSrvFile(
+  file: WallsSrvFile,
   options: { write: (data: string) => any }
 ): void
-export default function formatWallsSurveyFile(
-  file: WallsSurveyFile,
+export default function formatWallsSrvFile(
+  file: WallsSrvFile,
   options?: { write: (data: string) => any }
 ): string | void {
   if (!options?.write) {
     const lines: string[] = []
-    formatWallsSurveyFile(file, { write: (line: string) => lines.push(line) })
+    formatWallsSrvFile(file, { write: (line: string) => lines.push(line) })
     return lines.join('')
   } else {
     const { write } = options
