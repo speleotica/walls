@@ -13,16 +13,16 @@ import {
   flagOption,
   comment,
   dateDirective,
-  SrvLineType,
   orderOption,
   CompassAndTapeItem,
   RectilinearItem,
-  ShotType,
   lrudStyleOption,
   LrudStyle,
   LrudItem,
   fixDirective,
   prefixDirective,
+  compassAndTapeShot,
+  stationLruds,
 } from './WallsSrvFile'
 import { Length, Unitize } from '@speleotica/unitized'
 
@@ -57,36 +57,27 @@ describe(`formatWallsSrvFile`, function() {
               LrudItem.Right,
             ]),
           ]),
-          {
-            type: SrvLineType.Shot,
-            from: 'A',
-            to: 'B',
-            measurements: {
-              type: ShotType.CompassAndTape,
-              distance: Unitize.meters(3),
-              backsightAzimuth: Unitize.degrees(30.5),
-              frontsightInclination: Unitize.degrees(-3),
+          compassAndTapeShot(
+            'A',
+            'B',
+            Unitize.meters(3),
+            [null, Unitize.degrees(30.5)],
+            Unitize.degrees(-3),
+            [Unitize.meters(1), null, null, null, Unitize.gradians(20)],
+            {
+              segment: '/test',
+              comment: 'foobar',
               instrumentHeight: Unitize.feet(1),
-              targetHeight: null,
-            },
-            left: Unitize.meters(1),
-            lrudFacingAzimuth: Unitize.gradians(20),
-            segment: '/test',
-            comment: 'foobar',
-          },
-          {
-            type: SrvLineType.Shot,
-            from: 'B',
-            left: Unitize.meters(1),
-            right: Unitize.meters(2),
-            up: Unitize.meters(3),
-            down: Unitize.meters(4),
-          },
+            }
+          ),
+          stationLruds('B', [
+            Unitize.meters(1),
+            Unitize.meters(2),
+            Unitize.meters(3),
+            Unitize.meters(4),
+          ]),
           dateDirective(new Date('Feb 4, 1986')),
-          comment(`this
-is
-a
-test`),
+          comment(`this\nis\na\ntest`),
           prefixDirective(1, 'Test'),
           fixDirective(
             'A',

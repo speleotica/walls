@@ -751,6 +751,140 @@ export type Shot = {
   raw?: Segment | null | undefined
 }
 
+type ShotRestOptions = {
+  cFlag?: boolean | null | undefined
+  segment?: string | null | undefined
+  comment?: string | null | undefined
+}
+
+type CompassAndTapeShotRestOptions = {
+  cFlag?: boolean | null | undefined
+  segment?: string | null | undefined
+  comment?: string | null | undefined
+  instrumentHeight?: UnitizedNumber<Length> | null | undefined
+  targetHeight?: UnitizedNumber<Length> | null | undefined
+}
+
+type BuilderLruds =
+  | [
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined
+    ]
+  | [
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Angle>
+    ]
+  | [
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Angle>,
+      UnitizedNumber<Angle>
+    ]
+
+export const compassAndTapeShot = (
+  from: string | null | undefined,
+  to: string | null | undefined,
+  distance: UnitizedNumber<Length>,
+  azimuth:
+    | UnitizedNumber<Angle>
+    | [
+        UnitizedNumber<Angle> | null | undefined,
+        UnitizedNumber<Angle> | null | undefined
+      ]
+    | null
+    | undefined,
+  inclination:
+    | UnitizedNumber<Angle>
+    | [
+        UnitizedNumber<Angle> | null | undefined,
+        UnitizedNumber<Angle> | null | undefined
+      ]
+    | null
+    | undefined,
+  lruds?: BuilderLruds,
+  options?: CompassAndTapeShotRestOptions
+): Shot => {
+  const { instrumentHeight, targetHeight, ...rest } = options || {}
+  return {
+    type: SrvLineType.Shot,
+    from,
+    to,
+    measurements: {
+      type: ShotType.CompassAndTape,
+      distance,
+      frontsightAzimuth: Array.isArray(azimuth) ? azimuth[0] : azimuth,
+      backsightAzimuth: Array.isArray(azimuth) ? azimuth[1] : undefined,
+      frontsightInclination: Array.isArray(inclination)
+        ? inclination[0]
+        : inclination,
+      backsightInclination: Array.isArray(inclination)
+        ? inclination[1]
+        : undefined,
+      instrumentHeight,
+      targetHeight,
+    },
+    left: lruds?.[0],
+    right: lruds?.[1],
+    up: lruds?.[2],
+    down: lruds?.[3],
+    lrudFacingAzimuth: lruds?.length === 5 ? lruds[4] : undefined,
+    leftAzimuth: lruds?.length === 6 ? lruds[4] : undefined,
+    rightAzimuth: lruds?.length === 6 ? lruds[5] : undefined,
+    ...rest,
+  }
+}
+export const rectilinearShot = (
+  from: string | null | undefined,
+  to: string | null | undefined,
+  easting: UnitizedNumber<Length>,
+  northing: UnitizedNumber<Length>,
+  elevation: UnitizedNumber<Length>,
+  lruds?: BuilderLruds,
+  options?: ShotRestOptions
+): Shot => ({
+  type: SrvLineType.Shot,
+  from,
+  to,
+  measurements: {
+    type: ShotType.Rectilinear,
+    easting,
+    northing,
+    elevation,
+  },
+  left: lruds?.[0],
+  right: lruds?.[1],
+  up: lruds?.[2],
+  down: lruds?.[3],
+  lrudFacingAzimuth: lruds?.length === 5 ? lruds[4] : undefined,
+  leftAzimuth: lruds?.length === 6 ? lruds[4] : undefined,
+  rightAzimuth: lruds?.length === 6 ? lruds[5] : undefined,
+  ...options,
+})
+
+export const stationLruds = (
+  station: string,
+  lruds?: BuilderLruds,
+  options?: ShotRestOptions
+): Shot => ({
+  type: SrvLineType.Shot,
+  from: station,
+  left: lruds?.[0],
+  right: lruds?.[1],
+  up: lruds?.[2],
+  down: lruds?.[3],
+  lrudFacingAzimuth: lruds?.length === 5 ? lruds[4] : undefined,
+  leftAzimuth: lruds?.length === 6 ? lruds[4] : undefined,
+  rightAzimuth: lruds?.length === 6 ? lruds[5] : undefined,
+  ...options,
+})
+
 export type Comment = {
   type: SrvLineType.Comment
   comment: string
