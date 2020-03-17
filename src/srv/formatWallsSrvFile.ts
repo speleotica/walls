@@ -12,7 +12,6 @@ import {
   Color,
   SymbolDirective,
   DateDirective,
-  BlockComment,
   Shot,
   ShotType,
   CompassAndTapeItem,
@@ -164,10 +163,6 @@ export function quote(str: string): string {
   return `"${str.replace(/["\\\n\t\r]/g, match => quoted[match] || match)}"`
 }
 
-export function quoteIfNecessary(str: string): string {
-  return /\s|,/.test(str) ? quote(str) : str
-}
-
 export function formatUnitsOption(
   option: UnitsOption,
   settings: SrvSettings
@@ -179,7 +174,7 @@ export function formatUnitsOption(
       return 'RECT'
     case UnitsOptionType.Order:
       return 'ORDER=' + option.order.join('')
-    case UnitsOptionType.EveryDistanceUnit:
+    case UnitsOptionType.DistanceUnit:
       return formatLengthUnitForDirective(option.unit)
     case UnitsOptionType.PrimaryDistanceUnit:
       return `D=${formatLengthUnitForDirective(option.unit)}`
@@ -271,10 +266,10 @@ export function formatUnitsOption(
     case UnitsOptionType.VerticalUnitVariance:
       return `UVV=${option.scalingFactor}`
     case UnitsOptionType.Flag:
-      return option.flag ? `FLAG=${quoteIfNecessary(option.flag)}` : 'FLAG'
+      return option.flag ? `FLAG=${quote(option.flag)}` : 'FLAG'
     case UnitsOptionType.Macro:
       return `$${option.name}${
-        option.replacement ? `=${quoteIfNecessary(option.replacement)}` : ''
+        option.replacement ? `=${quote(option.replacement)}` : ''
       }`
   }
 }
@@ -289,7 +284,7 @@ export function formatUnitsDirective(
   for (const option of options) {
     parts.push(formatUnitsOption(option, curSettings))
     switch (option.type) {
-      case UnitsOptionType.EveryDistanceUnit:
+      case UnitsOptionType.DistanceUnit:
       case UnitsOptionType.PrimaryDistanceUnit:
       case UnitsOptionType.SecondaryDistanceUnit:
       case UnitsOptionType.BacksightAzimuthUnit:
@@ -302,7 +297,7 @@ export function formatUnitsDirective(
         continue
     }
     switch (option.type) {
-      case UnitsOptionType.EveryDistanceUnit:
+      case UnitsOptionType.DistanceUnit:
         curSettings.primaryDistanceUnit = curSettings.secondaryDistanceUnit =
           option.unit
         break
@@ -390,24 +385,49 @@ export function formatFixDirective(
   if (raw) return raw.value
   const parts = ['#FIX', station]
   if (east && north) {
-    parts.push(
-      formatLength(east, settings.primaryDistanceUnit),
-      formatLength(north, settings.primaryDistanceUnit)
-    )
+    for (const item of settings.rectilinearOrder) {
+      switch (item) {
+        case RectilinearItem.East:
+          parts.push(formatLength(east, settings.primaryDistanceUnit))
+          break
+        case RectilinearItem.North:
+          parts.push(formatLength(north, settings.primaryDistanceUnit))
+          break
+        case RectilinearItem.Elevation:
+          parts.push(formatLength(elevation, settings.primaryDistanceUnit))
+          break
+      }
+    }
   } else if (longitude && latitude) {
-    parts.push(
-      `${longitude.isNegative ? 'W' : 'E'}${longitude.get(Angle.degrees)}`,
-      `${latitude.isNegative ? 'S' : 'N'}${latitude.get(Angle.degrees)}`
-    )
+    for (const item of settings.rectilinearOrder) {
+      switch (item) {
+        case RectilinearItem.East:
+          parts.push(
+            `${longitude.isNegative ? 'W' : 'E'}${longitude
+              .abs()
+              .get(Angle.degrees)}`
+          )
+          break
+        case RectilinearItem.North:
+          parts.push(
+            `${latitude.isNegative ? 'S' : 'N'}${latitude
+              .abs()
+              .get(Angle.degrees)}`
+          )
+          break
+        case RectilinearItem.Elevation:
+          parts.push(formatLength(elevation, settings.primaryDistanceUnit))
+          break
+      }
+    }
   } else {
     throw new Error(`either east/north or latitude/longitude must be given`)
   }
-  parts.push(formatLength(elevation, settings.primaryDistanceUnit))
   if (horizontalVariance || verticalVariance) {
     parts.push(formatVariance(horizontalVariance, verticalVariance, settings))
   }
   if (note) parts.push(`/${note}`)
-  if (segment) parts.push(`#S ${segment}`)
+  if (segment) parts.push(`#SEGMENT ${segment}`)
   if (comment) parts.push(`; ${comment}`)
   return parts.join(' ') + '\r\n'
 }
@@ -480,13 +500,6 @@ export function formatDateDirective({
   }\r\n`
 }
 
-export function formatBlockComment({ comment, raw }: BlockComment): string {
-  if (raw) return raw.value
-  return `#[
-${comment}
-#]\r\n`
-}
-
 function formatAzimuths(
   frontsight: UnitizedNumber<Angle> | null | undefined,
   backsight: UnitizedNumber<Angle> | null | undefined,
@@ -539,9 +552,9 @@ export function formatShot(
     right,
     up,
     down,
-    lrudFacingDirection,
-    leftDirection,
-    rightDirection,
+    lrudFacingAzimuth,
+    leftAzimuth,
+    rightAzimuth,
     cFlag,
     segment,
     comment,
@@ -584,20 +597,18 @@ export function formatShot(
           )
           break
       }
-      if (instrumentHeight || targetHeight) {
-        parts.push(
-          instrumentHeight
-            ? formatLength(instrumentHeight, secondaryDistanceUnit)
-            : '--'
-        )
-        parts.push(
-          targetHeight
-            ? formatLength(targetHeight, secondaryDistanceUnit)
-            : '--'
-        )
-      }
     }
-  } else {
+    if (instrumentHeight || targetHeight) {
+      parts.push(
+        instrumentHeight
+          ? formatLength(instrumentHeight, secondaryDistanceUnit)
+          : '--'
+      )
+      parts.push(
+        targetHeight ? formatLength(targetHeight, secondaryDistanceUnit) : '--'
+      )
+    }
+  } else if (settings.shotType === ShotType.Rectilinear) {
     for (const item of rectilinearOrder) {
       switch (item) {
         case RectilinearItem.East:
@@ -641,26 +652,28 @@ export function formatShot(
           break
       }
     }
-    if (leftDirection && rightDirection) {
-      parts.push(
-        formatAzimuth(leftDirection, frontsightAzimuthUnit),
-        formatAzimuth(rightDirection, frontsightAzimuthUnit)
+    if (leftAzimuth && rightAzimuth) {
+      lrudParts.push(
+        formatAzimuth(leftAzimuth, frontsightAzimuthUnit),
+        formatAzimuth(rightAzimuth, frontsightAzimuthUnit)
       )
     }
-    if (lrudFacingDirection) {
-      parts.push(formatAzimuth(lrudFacingDirection, frontsightAzimuthUnit))
+    if (lrudFacingAzimuth) {
+      lrudParts.push(formatAzimuth(lrudFacingAzimuth, frontsightAzimuthUnit))
     }
-    if (cFlag) parts.push('C')
-    parts.push(`<${lrudParts.join(', ')}>`)
+    if (cFlag) lrudParts.push('C')
+    parts.push(`<${lrudParts.join(',')}>`)
   }
-  if (segment) parts.push(`#S ${segment}`)
+  if (segment) parts.push(`#SEGMENT ${segment}`)
   if (comment) parts.push(`; ${comment}`)
   return parts.join('\t') + '\r\n'
 }
 
-export function formatComment({ comment, raw }: Comment): string {
+export function formatComment({ comment, raw, block }: Comment): string {
   if (raw) return raw.value
-  return `; ${comment}\r\n`
+  return block || /[\r\n]/.test(comment)
+    ? `#[\r\n${comment.replace(/\r\n?|\n/gm, '\r\n')}\r\n#]\r\n`
+    : `; ${comment}\r\n`
 }
 
 export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {
@@ -681,26 +694,24 @@ export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {
       return formatNoteDirective(line)
     case SrvLineType.DateDirective:
       return formatDateDirective(line)
-    case SrvLineType.BlockComment:
-      return formatBlockComment(line)
     case SrvLineType.Comment:
       return formatComment(line)
   }
 }
 
-export function formatWallsSurveyFile(file: WallsSurveyFile): string
-export function formatWallsSurveyFile(
+export default function formatWallsSurveyFile(file: WallsSurveyFile): string
+export default function formatWallsSurveyFile(
   file: WallsSurveyFile,
   options: { write: (data: string) => any }
 ): void
-export function formatWallsSurveyFile(
+export default function formatWallsSurveyFile(
   file: WallsSurveyFile,
   options?: { write: (data: string) => any }
 ): string | void {
   if (!options?.write) {
     const lines: string[] = []
     formatWallsSurveyFile(file, { write: (line: string) => lines.push(line) })
-    return lines.join('\n')
+    return lines.join('')
   } else {
     const { write } = options
     const stack: SrvSettings[] = [defaultSrvSettings()]

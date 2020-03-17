@@ -17,8 +17,7 @@ export enum SrvLineType {
   FlagDirective = '#FLAG',
   SymbolDirective = '#SYMBOL',
   DateDirective = '#DATE',
-  BlockComment = '#[',
-  Comment = ';',
+  Comment = '#[',
 }
 
 export enum ShotType {
@@ -74,7 +73,7 @@ export enum UnitsOptionType {
   BacksightAzimuthUnit = 'AB=',
   PrimaryDistanceUnit = 'D=',
   SecondaryDistanceUnit = 'S=',
-  EveryDistanceUnit = '_',
+  DistanceUnit = '_',
   FrontsightInclinationUnit = 'V=',
   BacksightInclinationUnit = 'VB=',
   MagneticDeclination = 'DECL=',
@@ -109,12 +108,19 @@ export type CompassAndTapeOption = {
   type: UnitsOptionType.CompassAndTape
 }
 
+export const compassAndTapeOption = (): CompassAndTapeOption => ({
+  type: UnitsOptionType.CompassAndTape,
+})
+
 /**
  * Indicates following shots are measured with true-north-relative east/north/elevation displacemenets
  */
-export type RectOption = {
+export type RectilinearOption = {
   type: UnitsOptionType.Rectilinear
 }
+export const rectilinearOption = (): RectilinearOption => ({
+  type: UnitsOptionType.Rectilinear,
+})
 
 export enum CompassAndTapeItem {
   Distance = 'D',
@@ -138,6 +144,12 @@ export type OrderOption = {
   type: UnitsOptionType.Order
   order: CompassAndTapeOrder | RectilinearOrder
 }
+export const orderOption = (
+  order: CompassAndTapeOrder | RectilinearOrder
+): OrderOption => ({
+  type: UnitsOptionType.Order,
+  order,
+})
 
 export type AzimuthUnitOption = {
   type:
@@ -145,14 +157,42 @@ export type AzimuthUnitOption = {
     | UnitsOptionType.BacksightAzimuthUnit
   unit: Unit<Angle>
 }
+export const frontsightAzimuthUnitOption = (
+  unit: Unit<Angle>
+): AzimuthUnitOption => ({
+  type: UnitsOptionType.FrontsightAzimuthUnit,
+  unit,
+})
+export const backsightAzimuthUnitOption = (
+  unit: Unit<Angle>
+): AzimuthUnitOption => ({
+  type: UnitsOptionType.BacksightAzimuthUnit,
+  unit,
+})
 
 export type DistanceUnitOption = {
   type:
     | UnitsOptionType.PrimaryDistanceUnit
     | UnitsOptionType.SecondaryDistanceUnit
-    | UnitsOptionType.EveryDistanceUnit
+    | UnitsOptionType.DistanceUnit
   unit: Unit<Length>
 }
+export const primaryDistanceUnitOption = (
+  unit: Unit<Length>
+): DistanceUnitOption => ({
+  type: UnitsOptionType.PrimaryDistanceUnit,
+  unit,
+})
+export const secondaryDistanceUnitOption = (
+  unit: Unit<Length>
+): DistanceUnitOption => ({
+  type: UnitsOptionType.SecondaryDistanceUnit,
+  unit,
+})
+export const distanceUnitOption = (unit: Unit<Length>): DistanceUnitOption => ({
+  type: UnitsOptionType.DistanceUnit,
+  unit,
+})
 
 export type InclinationUnitOption = {
   type:
@@ -160,6 +200,18 @@ export type InclinationUnitOption = {
     | UnitsOptionType.BacksightInclinationUnit
   unit: Unit<Angle>
 }
+export const frontsightInclinationUnitOption = (
+  unit: Unit<Angle>
+): InclinationUnitOption => ({
+  type: UnitsOptionType.FrontsightInclinationUnit,
+  unit,
+})
+export const backsightInclinationUnitOption = (
+  unit: Unit<Angle>
+): InclinationUnitOption => ({
+  type: UnitsOptionType.BacksightInclinationUnit,
+  unit,
+})
 
 export type NorthCorrectionOption = {
   type:
@@ -168,11 +220,41 @@ export type NorthCorrectionOption = {
     | UnitsOptionType.RectilinearNorthCorrection
   trueNorthOffset: UnitizedNumber<Angle>
 }
+export const magneticDeclinationOption = (
+  trueNorthOffset: UnitizedNumber<Angle>
+): NorthCorrectionOption => ({
+  type: UnitsOptionType.MagneticDeclination,
+  trueNorthOffset,
+})
+export const gridNorthCorrectionOption = (
+  trueNorthOffset: UnitizedNumber<Angle>
+): NorthCorrectionOption => ({
+  type: UnitsOptionType.GridNorthCorrection,
+  trueNorthOffset,
+})
+export const rectilinearNorthCorrectionOption = (
+  trueNorthOffset: UnitizedNumber<Angle>
+): NorthCorrectionOption => ({
+  type: UnitsOptionType.RectilinearNorthCorrection,
+  trueNorthOffset,
+})
 
 export type DistanceCorrectionOption = {
   type: UnitsOptionType.DistanceCorrection | UnitsOptionType.HeightAdjustment
   correction: UnitizedNumber<Length>
 }
+export const distanceCorrectionOption = (
+  correction: UnitizedNumber<Length>
+): DistanceCorrectionOption => ({
+  type: UnitsOptionType.DistanceCorrection,
+  correction,
+})
+export const heightAdjustmentOption = (
+  correction: UnitizedNumber<Length>
+): DistanceCorrectionOption => ({
+  type: UnitsOptionType.HeightAdjustment,
+  correction,
+})
 
 export type AngleCorrectionOption = {
   type:
@@ -182,6 +264,30 @@ export type AngleCorrectionOption = {
     | UnitsOptionType.BacksightInclinationCorrection
   correction: UnitizedNumber<Angle>
 }
+export const frontsightAzimuthCorrectionOption = (
+  correction: UnitizedNumber<Angle>
+): AngleCorrectionOption => ({
+  type: UnitsOptionType.FrontsightAzimuthCorrection,
+  correction,
+})
+export const backsightAzimuthCorrectionOption = (
+  correction: UnitizedNumber<Angle>
+): AngleCorrectionOption => ({
+  type: UnitsOptionType.BacksightAzimuthCorrection,
+  correction,
+})
+export const frontsightInclinationCorrectionOption = (
+  correction: UnitizedNumber<Angle>
+): AngleCorrectionOption => ({
+  type: UnitsOptionType.FrontsightInclinationCorrection,
+  correction,
+})
+export const backsightInclinationCorrectionOption = (
+  correction: UnitizedNumber<Angle>
+): AngleCorrectionOption => ({
+  type: UnitsOptionType.BacksightInclinationCorrection,
+  correction,
+})
 
 export type BacksightTypeOption = {
   type:
@@ -191,16 +297,42 @@ export type BacksightTypeOption = {
   tolerance: UnitizedNumber<Angle>
   doNotAverage: boolean
 }
+export const backsightAzimuthTypeOption = (
+  isCorrected: boolean,
+  tolerance: UnitizedNumber<Angle>,
+  doNotAverage: boolean
+): BacksightTypeOption => ({
+  type: UnitsOptionType.BacksightAzimuthType,
+  isCorrected,
+  tolerance,
+  doNotAverage,
+})
+
+export const backsightInclinationTypeOption = (
+  isCorrected: boolean,
+  tolerance: UnitizedNumber<Angle>,
+  doNotAverage: boolean
+): BacksightTypeOption => ({
+  type: UnitsOptionType.BacksightInclinationType,
+  isCorrected,
+  tolerance,
+  doNotAverage,
+})
 
 export type ResetOption = {
   type: UnitsOptionType.Reset
 }
+export const resetOption = (): ResetOption => ({ type: UnitsOptionType.Reset })
 export type SaveOption = {
   type: UnitsOptionType.Save
 }
+export const saveOption = (): SaveOption => ({ type: UnitsOptionType.Save })
 export type RestoreOption = {
   type: UnitsOptionType.Restore
 }
+export const restoreOption = (): RestoreOption => ({
+  type: UnitsOptionType.Restore,
+})
 
 export enum StationNameCaseConversion {
   Upper = 'Upper',
@@ -212,6 +344,12 @@ export type StationNameCaseOption = {
   type: UnitsOptionType.StationNameCase
   conversion: StationNameCaseConversion
 }
+export const stationNameCaseOption = (
+  conversion: StationNameCaseConversion
+): StationNameCaseOption => ({
+  type: UnitsOptionType.StationNameCase,
+  conversion,
+})
 
 export enum LrudStyle {
   FromStationPerpendicular = 'F',
@@ -230,14 +368,30 @@ export enum LrudItem {
 export type LrudStyleOption = {
   type: UnitsOptionType.LrudStyle
   style: LrudStyle
-  order?: [LrudItem, LrudItem, LrudItem, LrudItem]
+  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null | undefined
 }
+export const lrudStyleOption = (
+  style: LrudStyle,
+  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null | undefined
+): LrudStyleOption => ({
+  type: UnitsOptionType.LrudStyle,
+  style,
+  order,
+})
 
 export type PrefixOption = {
   type: UnitsOptionType.Prefix
   level: 1 | 2 | 3
   prefix?: string | null | undefined
 }
+export const prefixOption = (
+  level: 1 | 2 | 3,
+  prefix: string | null | undefined
+): PrefixOption => ({
+  type: UnitsOptionType.Prefix,
+  level,
+  prefix,
+})
 
 export enum TapingMethod {
   InstrumentToTarget = 'IT',
@@ -250,6 +404,12 @@ export type TapingMethodOption = {
   type: UnitsOptionType.TapingMethod
   tapingMethod: TapingMethod
 }
+export const tapingMethodOption = (
+  tapingMethod: TapingMethod
+): TapingMethodOption => ({
+  type: UnitsOptionType.TapingMethod,
+  tapingMethod,
+})
 
 export type UnitVarianceOption = {
   type:
@@ -258,21 +418,51 @@ export type UnitVarianceOption = {
     | UnitsOptionType.VerticalUnitVariance
   scalingFactor: number
 }
+export const unitVarianceOption = (
+  scalingFactor: number
+): UnitVarianceOption => ({
+  type: UnitsOptionType.UnitVariance,
+  scalingFactor,
+})
+export const horizontalUnitVarianceOption = (
+  scalingFactor: number
+): UnitVarianceOption => ({
+  type: UnitsOptionType.HorizontalUnitVariance,
+  scalingFactor,
+})
+export const verticalUnitVarianceOption = (
+  scalingFactor: number
+): UnitVarianceOption => ({
+  type: UnitsOptionType.VerticalUnitVariance,
+  scalingFactor,
+})
 
 export type FlagOption = {
   type: UnitsOptionType.Flag
   flag?: string | null | undefined
 }
+export const flagOption = (flag: string | null | undefined): FlagOption => ({
+  type: UnitsOptionType.Flag,
+  flag,
+})
 
 export type MacroOption = {
   type: UnitsOptionType.Macro
   name: string
   replacement?: string | null | undefined
 }
+export const macroOption = (
+  name: string,
+  replacement: string | null | undefined
+): MacroOption => ({
+  type: UnitsOptionType.Macro,
+  name,
+  replacement,
+})
 
 export type UnitsOption =
   | CompassAndTapeOption
-  | RectOption
+  | RectilinearOption
   | OrderOption
   | AzimuthUnitOption
   | DistanceUnitOption
@@ -299,12 +489,29 @@ export type UnitsDirective = {
   raw?: Segment | null | undefined
 }
 
+export const unitsDirective = (
+  options: UnitsOption[],
+  comment?: string | null | undefined
+): UnitsDirective => ({
+  type: SrvLineType.UnitsDirective,
+  options,
+  comment,
+})
+
 export type SegmentDirective = {
   type: SrvLineType.SegmentDirective
   segment: string
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
+export const segmentDirective = (
+  segment: string,
+  comment?: string | null | undefined
+): SegmentDirective => ({
+  type: SrvLineType.SegmentDirective,
+  segment,
+  comment,
+})
 
 export enum VarianceAssignmentType {
   Length = '_',
@@ -344,6 +551,16 @@ export type PrefixDirective = {
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
+export const prefixDirective = (
+  level: 1 | 2 | 3,
+  prefix: string | null | undefined,
+  comment?: string | null | undefined
+): PrefixDirective => ({
+  type: SrvLineType.PrefixDirective,
+  level,
+  prefix,
+  comment,
+})
 
 export type NoteDirective = {
   type: SrvLineType.NoteDirective
@@ -352,6 +569,17 @@ export type NoteDirective = {
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
+export const noteDirective = (
+  level: 1 | 2 | 3,
+  station: string,
+  note: string,
+  comment?: string | null | undefined
+): NoteDirective => ({
+  type: SrvLineType.NoteDirective,
+  station,
+  note,
+  comment,
+})
 
 export type FlagDirective = {
   type: SrvLineType.FlagDirective
@@ -360,6 +588,17 @@ export type FlagDirective = {
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
+export const flagDirective = (
+  level: 1 | 2 | 3,
+  stations: string[],
+  flag: string,
+  comment?: string | null | undefined
+): FlagDirective => ({
+  type: SrvLineType.FlagDirective,
+  stations,
+  flag,
+  comment,
+})
 
 export enum SymbolOpacity {
   Solid = 'S',
@@ -390,6 +629,22 @@ export type SymbolDirective = {
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
+export const symbolDirective = (
+  opacity: SymbolOpacity | null | undefined,
+  shape: SymbolShape | null | undefined,
+  pointSize: number | null | undefined,
+  color: Color | null | undefined,
+  flag?: string | null | undefined,
+  comment?: string | null | undefined
+): SymbolDirective => ({
+  type: SrvLineType.SymbolDirective,
+  opacity,
+  shape,
+  pointSize,
+  color,
+  flag,
+  comment,
+})
 
 export type DateDirective = {
   type: SrvLineType.DateDirective
@@ -397,12 +652,14 @@ export type DateDirective = {
   comment?: string | null | undefined
   raw?: Segment | null | undefined
 }
-
-export type BlockComment = {
-  type: SrvLineType.BlockComment
-  comment: string
-  raw?: Segment | null | undefined
-}
+export const dateDirective = (
+  date: Date,
+  comment?: string | null | undefined
+): DateDirective => ({
+  type: SrvLineType.DateDirective,
+  date,
+  comment,
+})
 
 export type Shot = {
   type: SrvLineType.Shot
@@ -424,9 +681,9 @@ export type Shot = {
   right?: UnitizedNumber<Length> | null | undefined
   up?: UnitizedNumber<Length> | null | undefined
   down?: UnitizedNumber<Length> | null | undefined
-  lrudFacingDirection?: UnitizedNumber<Angle> | null | undefined
-  leftDirection?: UnitizedNumber<Angle> | null | undefined
-  rightDirection?: UnitizedNumber<Angle> | null | undefined
+  lrudFacingAzimuth?: UnitizedNumber<Angle> | null | undefined
+  leftAzimuth?: UnitizedNumber<Angle> | null | undefined
+  rightAzimuth?: UnitizedNumber<Angle> | null | undefined
   cFlag?: boolean | null | undefined
   segment?: string | null | undefined
   comment?: string | null | undefined
@@ -436,8 +693,13 @@ export type Shot = {
 export type Comment = {
   type: SrvLineType.Comment
   comment: string
+  block?: boolean | null | undefined
   raw?: Segment | null | undefined
 }
+export const comment = (comment: string): Comment => ({
+  type: SrvLineType.Comment,
+  comment,
+})
 
 export type SrvLine =
   | Shot
@@ -448,7 +710,6 @@ export type SrvLine =
   | SymbolDirective
   | NoteDirective
   | DateDirective
-  | BlockComment
   | Comment
 
 export const defaultSrvSettings = (): SrvSettings => ({

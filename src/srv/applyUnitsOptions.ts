@@ -57,7 +57,7 @@ export default function applyUnitsOptions(
             break
         }
         break
-      case UnitsOptionType.EveryDistanceUnit:
+      case UnitsOptionType.DistanceUnit:
         top.primaryDistanceUnit = top.secondaryDistanceUnit = option.unit
         break
       case UnitsOptionType.PrimaryDistanceUnit:
