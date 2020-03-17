@@ -327,7 +327,7 @@ export function formatUnitsDirective(
     }
   }
   if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ')
+  return parts.join(' ') + '\r\n'
 }
 
 export function formatSegmentDirective({
@@ -336,7 +336,7 @@ export function formatSegmentDirective({
   raw,
 }: SegmentDirective): string {
   if (raw) return raw.value
-  return `#SEGMENT ${segment}${comment ? ` ; ${comment}` : ''}`
+  return `#SEGMENT ${segment}${comment ? ` ; ${comment}` : ''}\r\n`
 }
 
 export function formatVarianceAssignment(
@@ -409,7 +409,7 @@ export function formatFixDirective(
   if (note) parts.push(`/${note}`)
   if (segment) parts.push(`#S ${segment}`)
   if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ')
+  return parts.join(' ') + '\r\n'
 }
 
 export function formatPrefixDirective({
@@ -422,7 +422,7 @@ export function formatPrefixDirective({
   const parts = [`#PREFIX${level === 1 ? '' : level}`]
   if (prefix) parts.push(prefix)
   if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ')
+  return parts.join(' ') + '\r\n'
 }
 
 export function formatNoteDirective({
@@ -432,7 +432,7 @@ export function formatNoteDirective({
   raw,
 }: NoteDirective): string {
   if (raw) return raw.value
-  return `#NOTE ${station} ${note}${comment ? `; ${comment}` : ''}`
+  return `#NOTE ${station} ${note}${comment ? `; ${comment}` : ''}\r\n`
 }
 
 export function formatFlagDirective({
@@ -442,7 +442,9 @@ export function formatFlagDirective({
   raw,
 }: FlagDirective): string {
   if (raw) return raw.value
-  return `#FLAG ${stations.join(' ')} /${flag}${comment ? `; ${comment}` : ''}`
+  return `#FLAG ${stations.join(' ')} /${flag}${
+    comment ? `; ${comment}` : ''
+  }\r\n`
 }
 
 export function formatColor({ r, g, b }: Color): string {
@@ -461,7 +463,7 @@ export function formatSymbolDirective({
   if (raw) return raw.value
   return `#SYMBOL ${opacity || '-'}${shape || '-'}${pointSize ?? '-'}${
     color ? formatColor(color) : ''
-  } /${flag}${comment ? `; ${comment}` : ''}`
+  } /${flag}${comment ? `; ${comment}` : ''}\r\n`
 }
 
 export function formatDateDirective({
@@ -473,14 +475,16 @@ export function formatDateDirective({
   return `#DATE ${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,
     '0'
-  )}-${String(date.getDate()).padStart(2, '0')}${comment ? `; ${comment}` : ''}`
+  )}-${String(date.getDate()).padStart(2, '0')}${
+    comment ? `; ${comment}` : ''
+  }\r\n`
 }
 
 export function formatBlockComment({ comment, raw }: BlockComment): string {
   if (raw) return raw.value
   return `#[
 ${comment}
-#]`
+#]\r\n`
 }
 
 function formatAzimuths(
@@ -651,12 +655,12 @@ export function formatShot(
   }
   if (segment) parts.push(`#S ${segment}`)
   if (comment) parts.push(`; ${comment}`)
-  return parts.join('\t')
+  return parts.join('\t') + '\r\n'
 }
 
 export function formatComment({ comment, raw }: Comment): string {
   if (raw) return raw.value
-  return `; ${comment}`
+  return `; ${comment}\r\n`
 }
 
 export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {
