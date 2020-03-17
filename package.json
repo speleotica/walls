@@ -1,7 +1,7 @@
 {
-  "name": "typescript-library-skeleton",
+  "name": "@speleotica/walls",
   "version": "0.0.0-development",
-  "description": "my personal ES2015 library project skeleton",
+  "description": "Walls Cave Survey data I/O",
   "main": "index.js",
   "sideEffects": false,
   "scripts": {
@@ -69,17 +69,18 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/jedwards1211/typescript-library-skeleton.git"
+    "url": "https://github.com/speleotica/walls.git"
   },
   "keywords": [
-    "typescript"
+    "walls-cave-survey",
+    "cave-survey"
   ],
   "author": "Andy Edwards",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jedwards1211/typescript-library-skeleton/issues"
+    "url": "https://github.com/speleotica/walls/issues"
   },
-  "homepage": "https://github.com/jedwards1211/typescript-library-skeleton#readme",
+  "homepage": "https://github.com/speleotica/walls#readme",
   "devDependencies": {
     "@babel/cli": "^7.1.5",
     "@babel/core": "^7.1.6",
@@ -122,7 +123,9 @@
     "typescript": "^3.7.2"
   },
   "dependencies": {
-    "@babel/runtime": "^7.1.5"
+    "@babel/runtime": "^7.1.5",
+    "@speleotica/unitized": "^2.0.0",
+    "parse-segment": "^1.5.3"
   },
   "renovate": {
     "extends": [
