@@ -110,7 +110,7 @@ export type CompassAndTapeOption = {
 }
 
 /**
- * Indicates following shots are measured with true-north-relative east/north/up displacemenets
+ * Indicates following shots are measured with true-north-relative east/north/elevation displacemenets
  */
 export type RectOption = {
   type: UnitsOptionType.Rectilinear
@@ -124,7 +124,7 @@ export enum CompassAndTapeItem {
 export enum RectilinearItem {
   East = 'E',
   North = 'N',
-  Up = 'U',
+  Elevation = 'U',
 }
 
 export type CompassAndTapeOrder =
@@ -236,7 +236,7 @@ export type LrudStyleOption = {
 export type PrefixOption = {
   type: UnitsOptionType.Prefix
   level: 1 | 2 | 3
-  prefix: string
+  prefix?: string | null | undefined
 }
 
 export enum TapingMethod {
@@ -292,297 +292,11 @@ export type UnitsOption =
   | FlagOption
   | MacroOption
 
-function formatLengthUnitForDirective(unit: Unit<Length>): string {
-  switch (unit) {
-    case Length.meters:
-      return 'Meters'
-    case Length.feet:
-      return 'Feet'
-    default:
-      throw new Error(`invalid length unit: ${unit.id}`)
-  }
-}
-
-function formatAzimuthUnitForDirective(unit: Unit<Angle>): string {
-  switch (unit) {
-    case Angle.degrees:
-      return 'Degrees'
-    case Angle.gradians:
-      return 'Grads'
-    case Angle.milsNATO:
-      return 'Mils'
-    default:
-      throw new Error(`invalid azimuth unit: ${unit.id}`)
-  }
-}
-
-function formatInclinationUnitForDirective(unit: Unit<Angle>): string {
-  switch (unit) {
-    case Angle.degrees:
-      return 'Degrees'
-    case Angle.gradians:
-      return 'Grads'
-    case Angle.milsNATO:
-      return 'Mils'
-    case Angle.percentGrade:
-      return 'Percent'
-    default:
-      throw new Error(`invalid inclination unit: ${unit.id}`)
-  }
-}
-
-function unitSuffix(unit: Unit<any>): string {
-  switch (unit) {
-    case Length.meters:
-      return 'm'
-    case Length.feet:
-      return 'f'
-    case Angle.degrees:
-      return 'd'
-    case Angle.gradians:
-      return 'g'
-    case Angle.milsNATO:
-      return 'm'
-    case Angle.percentGrade:
-      return 'p'
-    default:
-      throw new Error(`invalid unit: ${unit.id}`)
-  }
-}
-
-export function formatLength(
-  length: UnitizedNumber<Length>,
-  defaultUnit: Unit<Length>
-): string {
-  switch (length.unit) {
-    case Length.meters:
-    case Length.feet: {
-      break
-    }
-    case Length.inches: {
-      const value = length.get(Length.inches)
-      if (value % 12) {
-        return `${Math.floor(value / 12)}i${value % 12}`
-      }
-      length = length.in(Length.feet)
-      break
-    }
-    default: {
-      length = length.in(defaultUnit)
-    }
-  }
-  const value = length.get(length.unit)
-  return length.unit === defaultUnit
-    ? String(value)
-    : `${value}${unitSuffix(length.unit)}`
-}
-
-export function formatAzimuth(
-  angle: UnitizedNumber<Angle>,
-  defaultUnit: Unit<Angle>
-): string {
-  switch (angle.unit) {
-    case Angle.degrees:
-    case Angle.gradians:
-    case Angle.milsNATO:
-      break
-    case Angle.percentGrade:
-      throw new Error(`invalid azimuth unit: ${angle.unit.id}`)
-    default:
-      angle = angle.in(defaultUnit)
-  }
-  const value = angle.get(angle.unit)
-  return angle.unit === defaultUnit
-    ? String(value)
-    : `${value}${unitSuffix(angle.unit)}`
-}
-
-export function formatInclination(
-  angle: UnitizedNumber<Angle>,
-  defaultUnit: Unit<Angle>
-): string {
-  switch (angle.unit) {
-    case Angle.degrees:
-    case Angle.gradians:
-    case Angle.milsNATO:
-    case Angle.percentGrade:
-      break
-    default:
-      angle = angle.in(defaultUnit)
-  }
-  const value = angle.get(angle.unit)
-  return angle.unit === defaultUnit
-    ? String(value)
-    : `${value}${unitSuffix(angle.unit)}`
-}
-
-export function formatUnitsOption(
-  option: UnitsOption,
-  settings: SrvSettings
-): string {
-  switch (option.type) {
-    case UnitsOptionType.CompassAndTape:
-      return 'CT'
-    case UnitsOptionType.Rectilinear:
-      return 'RECT'
-    case UnitsOptionType.Order:
-      return 'ORDER=' + option.order.join('')
-    case UnitsOptionType.EveryDistanceUnit:
-      return formatLengthUnitForDirective(option.unit)
-    case UnitsOptionType.PrimaryDistanceUnit:
-      return `D=${formatLengthUnitForDirective(option.unit)}`
-    case UnitsOptionType.SecondaryDistanceUnit:
-      return `S=${formatLengthUnitForDirective(option.unit)}`
-    case UnitsOptionType.BacksightAzimuthUnit:
-      return `A=${formatAzimuthUnitForDirective(option.unit)}`
-    case UnitsOptionType.FrontsightAzimuthUnit:
-      return `AB=${formatAzimuthUnitForDirective(option.unit)}`
-    case UnitsOptionType.BacksightInclinationUnit:
-      return `V=${formatInclinationUnitForDirective(option.unit)}`
-    case UnitsOptionType.FrontsightInclinationUnit:
-      return `VB=${formatInclinationUnitForDirective(option.unit)}`
-    case UnitsOptionType.MagneticDeclination:
-      return `DECL=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
-    case UnitsOptionType.GridNorthCorrection:
-      return `GRID=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
-    case UnitsOptionType.RectilinearNorthCorrection:
-      return `RECT=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
-    case UnitsOptionType.DistanceCorrection:
-      return `INCD=${formatLength(
-        option.correction,
-        settings.primaryDistanceUnit
-      )}`
-    case UnitsOptionType.FrontsightAzimuthCorrection:
-      return `INCA=${formatAzimuth(
-        option.correction,
-        settings.frontsightAzimuthUnit
-      )}`
-    case UnitsOptionType.BacksightAzimuthCorrection:
-      return `INCA=${formatAzimuth(
-        option.correction,
-        settings.backsightAzimuthUnit
-      )}`
-    case UnitsOptionType.FrontsightInclinationCorrection:
-      return `INCA=${formatInclination(
-        option.correction,
-        settings.frontsightInclinationUnit
-      )}`
-    case UnitsOptionType.BacksightInclinationCorrection:
-      return `INCA=${formatInclination(
-        option.correction,
-        settings.backsightInclinationUnit
-      )}`
-    case UnitsOptionType.HeightAdjustment:
-      return `INCH=${formatLength(
-        option.correction,
-        settings.primaryDistanceUnit
-      )}`
-    case UnitsOptionType.BacksightAzimuthType:
-      return `TYPEAB=${option.isCorrected ? 'C' : 'N'},${formatAzimuth(
-        option.tolerance,
-        settings.backsightAzimuthUnit
-      )}${option.doNotAverage ? ',X' : ''}`
-    case UnitsOptionType.BacksightInclinationType:
-      return `TYPEVB=${option.isCorrected ? 'C' : 'N'},${formatInclination(
-        option.tolerance,
-        settings.backsightInclinationUnit
-      )}${option.doNotAverage ? ',X' : ''}`
-    case UnitsOptionType.Reset:
-      return 'RESET'
-    case UnitsOptionType.Save:
-      return 'SAVE'
-    case UnitsOptionType.Restore:
-      return 'RESTORE'
-    case UnitsOptionType.StationNameCase:
-      return `CASE=${option.conversion}`
-    case UnitsOptionType.LrudStyle:
-      return `LRUD=${option.style}${
-        option.order ? `?${option.order.join('')}` : ''
-      }`
-    case UnitsOptionType.Prefix:
-      return `PREFIX${option.level === 1 ? '' : option.level}=${option.prefix}`
-    case UnitsOptionType.TapingMethod:
-      return `TAPE=${option.tapingMethod}`
-    case UnitsOptionType.UnitVariance:
-      return `UV=${option.scalingFactor}`
-    case UnitsOptionType.HorizontalUnitVariance:
-      return `UVH=${option.scalingFactor}`
-    case UnitsOptionType.VerticalUnitVariance:
-      return `UVV=${option.scalingFactor}`
-    case UnitsOptionType.Flag:
-      return option.flag ? `FLAG=${option.flag}` : 'FLAG'
-    case UnitsOptionType.Macro:
-      return `$${option.name}${
-        option.replacement ? `=${option.replacement}` : ''
-      }`
-  }
-}
-
 export type UnitsDirective = {
   type: SrvLineType.UnitsDirective
   options: UnitsOption[]
   comment?: string | null | undefined
   raw?: Segment | null | undefined
-}
-
-export function formatUnitsDirective(
-  { options, comment, raw }: UnitsDirective,
-  settings: SrvSettings
-): string {
-  if (raw) return raw.value
-  let curSettings = settings
-  const parts = ['#UNITS']
-  for (const option of options) {
-    parts.push(formatUnitsOption(option, curSettings))
-    switch (option.type) {
-      case UnitsOptionType.EveryDistanceUnit:
-      case UnitsOptionType.PrimaryDistanceUnit:
-      case UnitsOptionType.SecondaryDistanceUnit:
-      case UnitsOptionType.BacksightAzimuthUnit:
-      case UnitsOptionType.FrontsightAzimuthUnit:
-      case UnitsOptionType.BacksightInclinationUnit:
-      case UnitsOptionType.FrontsightInclinationUnit:
-        if (curSettings === settings) curSettings = { ...settings }
-        break
-      default:
-        continue
-    }
-    switch (option.type) {
-      case UnitsOptionType.EveryDistanceUnit:
-        curSettings.primaryDistanceUnit = curSettings.secondaryDistanceUnit =
-          option.unit
-        break
-      case UnitsOptionType.PrimaryDistanceUnit:
-        curSettings.primaryDistanceUnit = option.unit
-        break
-      case UnitsOptionType.SecondaryDistanceUnit:
-        curSettings.secondaryDistanceUnit = option.unit
-        break
-      case UnitsOptionType.BacksightAzimuthUnit:
-        curSettings.backsightAzimuthUnit = option.unit
-        break
-      case UnitsOptionType.FrontsightAzimuthUnit:
-        curSettings.frontsightAzimuthUnit = option.unit
-        break
-      case UnitsOptionType.BacksightInclinationUnit:
-        curSettings.backsightInclinationUnit = option.unit
-        break
-      case UnitsOptionType.FrontsightInclinationUnit:
-        curSettings.frontsightInclinationUnit = option.unit
-        break
-    }
-  }
-  if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ')
 }
 
 export type SegmentDirective = {
@@ -592,22 +306,14 @@ export type SegmentDirective = {
   raw?: Segment | null | undefined
 }
 
-export function formatSegmentDirective({
-  segment,
-  comment,
-  raw,
-}: SegmentDirective): string {
-  if (raw) return raw.value
-  return `#SEGMENT ${segment}${comment ? ` ; ${comment}` : ''}`
-}
-enum VarianceAssignmentType {
+export enum VarianceAssignmentType {
   Length = '_',
   RMSError = 'R',
   FloatShot = '?',
   FloatTraverse = '*',
 }
 
-type VarianceAssignment =
+export type VarianceAssignment =
   | {
       type: VarianceAssignmentType.Length | VarianceAssignmentType.RMSError
       length: UnitizedNumber<Length>
@@ -622,7 +328,7 @@ export type FixDirective = {
   longitude?: UnitizedNumber<Angle> | null | undefined
   east?: UnitizedNumber<Length> | null | undefined
   north?: UnitizedNumber<Length> | null | undefined
-  up: UnitizedNumber<Length>
+  elevation: UnitizedNumber<Length>
   horizontalVariance?: VarianceAssignment | null | undefined
   verticalVariance?: VarianceAssignment | null | undefined
   note?: string | null | undefined
@@ -639,19 +345,6 @@ export type PrefixDirective = {
   raw?: Segment | null | undefined
 }
 
-export function formatPrefixDirective({
-  level,
-  prefix,
-  comment,
-  raw,
-}: PrefixDirective): string {
-  if (raw) return raw.value
-  const parts = [`#PREFIX${level === 1 ? '' : level}`]
-  if (prefix) parts.push(prefix)
-  if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ')
-}
-
 export type NoteDirective = {
   type: SrvLineType.NoteDirective
   station: string
@@ -660,32 +353,12 @@ export type NoteDirective = {
   raw?: Segment | null | undefined
 }
 
-export function formatNoteDirective({
-  station,
-  note,
-  comment,
-  raw,
-}: NoteDirective): string {
-  if (raw) return raw.value
-  return `#NOTE ${station} ${note}${comment ? `; ${comment}` : ''}`
-}
-
 export type FlagDirective = {
   type: SrvLineType.FlagDirective
   stations: string[]
   flag: string
   comment?: string | null | undefined
   raw?: Segment | null | undefined
-}
-
-export function formatFlagDirective({
-  stations,
-  flag,
-  comment,
-  raw,
-}: FlagDirective): string {
-  if (raw) return raw.value
-  return `#FLAG ${stations.join(' ')} /${flag}${comment ? `; ${comment}` : ''}`
 }
 
 export enum SymbolOpacity {
@@ -707,10 +380,6 @@ export type Color = {
   b: number
 }
 
-export function formatColor({ r, g, b }: Color): string {
-  return `(${r}, ${g}, ${b})`
-}
-
 export type SymbolDirective = {
   type: SrvLineType.SymbolDirective
   opacity?: SymbolOpacity | null | undefined
@@ -722,21 +391,6 @@ export type SymbolDirective = {
   raw?: Segment | null | undefined
 }
 
-export function formatSymbolDirective({
-  opacity,
-  shape,
-  pointSize,
-  color,
-  flag,
-  comment,
-  raw,
-}: SymbolDirective): string {
-  if (raw) return raw.value
-  return `#SYMBOL ${opacity || '-'}${shape || '-'}${pointSize ?? '-'}${
-    color ? formatColor(color) : ''
-  } /${flag}${comment ? `; ${comment}` : ''}`
-}
-
 export type DateDirective = {
   type: SrvLineType.DateDirective
   date: Date
@@ -744,29 +398,10 @@ export type DateDirective = {
   raw?: Segment | null | undefined
 }
 
-export function formatDateDirective({
-  date,
-  comment,
-  raw,
-}: DateDirective): string {
-  if (raw) return raw.value
-  return `#DATE ${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    '0'
-  )}-${String(date.getDate()).padStart(2, '0')}${comment ? `; ${comment}` : ''}`
-}
-
 export type BlockComment = {
   type: SrvLineType.BlockComment
   comment: string
   raw?: Segment | null | undefined
-}
-
-export function formatBlockComment({ comment, raw }: BlockComment): string {
-  if (raw) return raw.value
-  return `#[
-${comment}
-#]`
 }
 
 export type Shot = {
@@ -780,6 +415,9 @@ export type Shot = {
   backsightInclination?: UnitizedNumber<Angle> | null | undefined
   instrumentHeight?: UnitizedNumber<Length> | null | undefined
   targetHeight?: UnitizedNumber<Length> | null | undefined
+  east?: UnitizedNumber<Length> | null | undefined
+  north?: UnitizedNumber<Length> | null | undefined
+  elevation?: UnitizedNumber<Length> | null | undefined
   horizontalVariance?: VarianceAssignment | null | undefined
   verticalVariance?: VarianceAssignment | null | undefined
   left?: UnitizedNumber<Length> | null | undefined
@@ -823,7 +461,7 @@ export const defaultSrvSettings = (): SrvSettings => ({
   rectilinearOrder: [
     RectilinearItem.East,
     RectilinearItem.North,
-    RectilinearItem.Up,
+    RectilinearItem.Elevation,
   ],
   primaryDistanceUnit: Length.meters,
   secondaryDistanceUnit: Length.meters,
@@ -856,3 +494,7 @@ export const defaultSrvSettings = (): SrvSettings => ({
   flag: null,
   segment: null,
 })
+
+export type WallsSurveyFile = {
+  lines: SrvLine[]
+}
