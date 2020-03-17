@@ -767,6 +767,7 @@ export type SrvLine =
   | UnitsDirective
   | FixDirective
   | SegmentDirective
+  | PrefixDirective
   | FlagDirective
   | SymbolDirective
   | NoteDirective

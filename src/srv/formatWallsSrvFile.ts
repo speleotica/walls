@@ -693,6 +693,8 @@ export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {
       return formatFixDirective(line, settings)
     case SrvLineType.SegmentDirective:
       return formatSegmentDirective(line)
+    case SrvLineType.PrefixDirective:
+      return formatPrefixDirective(line)
     case SrvLineType.FlagDirective:
       return formatFlagDirective(line)
     case SrvLineType.SymbolDirective:

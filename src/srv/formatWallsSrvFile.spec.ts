@@ -22,6 +22,7 @@ import {
   LrudStyle,
   LrudItem,
   fixDirective,
+  prefixDirective,
 } from './WallsSrvFile'
 import { Length, Unitize } from '@speleotica/unitized'
 
@@ -86,6 +87,7 @@ describe(`formatWallsSrvFile`, function() {
 is
 a
 test`),
+          prefixDirective(1, 'Test'),
           fixDirective(
             'A',
             Unitize.meters(2),
@@ -112,6 +114,7 @@ is\r
 a\r
 test\r
 #]\r
+#PREFIX Test\r
 #FIX A 5m 3 2m /foo\r
 #FIX C N34.567 4 W83.2342\r
 `)
