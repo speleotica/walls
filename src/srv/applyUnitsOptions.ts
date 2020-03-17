@@ -50,8 +50,8 @@ export default function applyUnitsOptions(
           case CompassAndTapeItem.Inclination:
             top.compassAndTapeOrder = option.order
             break
-          case RectilinearItem.East:
-          case RectilinearItem.North:
+          case RectilinearItem.Easting:
+          case RectilinearItem.Northing:
           case RectilinearItem.Elevation:
             top.rectilinearOrder = option.order
             break

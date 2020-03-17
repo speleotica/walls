@@ -113,7 +113,7 @@ export const compassAndTapeOption = (): CompassAndTapeOption => ({
 })
 
 /**
- * Indicates following shots are measured with true-north-relative east/north/elevation displacemenets
+ * Indicates following shots are measured with true-northing-relative easting/northing/elevation displacemenets
  */
 export type RectilinearOption = {
   type: UnitsOptionType.Rectilinear
@@ -128,8 +128,8 @@ export enum CompassAndTapeItem {
   Inclination = 'V',
 }
 export enum RectilinearItem {
-  East = 'E',
-  North = 'N',
+  Easting = 'E',
+  Northing = 'N',
   Elevation = 'U',
 }
 
@@ -533,8 +533,8 @@ export type FixDirective = {
   station: string
   latitude?: UnitizedNumber<Angle> | null | undefined
   longitude?: UnitizedNumber<Angle> | null | undefined
-  east?: UnitizedNumber<Length> | null | undefined
-  north?: UnitizedNumber<Length> | null | undefined
+  easting?: UnitizedNumber<Length> | null | undefined
+  northing?: UnitizedNumber<Length> | null | undefined
   elevation: UnitizedNumber<Length>
   horizontalVariance?: VarianceAssignment | null | undefined
   verticalVariance?: VarianceAssignment | null | undefined
@@ -542,6 +542,54 @@ export type FixDirective = {
   segment?: string | null | undefined
   comment?: string | null | undefined
   raw?: Segment | null | undefined
+}
+
+type FixDirectiveRestOptions = {
+  horizontalVariance?: VarianceAssignment | null | undefined
+  verticalVariance?: VarianceAssignment | null | undefined
+  note?: string | null | undefined
+  segment?: string | null | undefined
+  comment?: string | null | undefined
+}
+
+export function fixDirective(
+  station: string,
+  latitude: UnitizedNumber<Angle>,
+  longitude: UnitizedNumber<Angle>,
+  elevation: UnitizedNumber<Length>,
+  options?: FixDirectiveRestOptions
+): FixDirective
+export function fixDirective(
+  station: string,
+  easting: UnitizedNumber<Length>,
+  northing: UnitizedNumber<Length>,
+  elevation: UnitizedNumber<Length>,
+  options?: FixDirectiveRestOptions
+): FixDirective
+export function fixDirective(
+  station: string,
+  x: UnitizedNumber<Length> | UnitizedNumber<Angle>,
+  y: UnitizedNumber<Length> | UnitizedNumber<Angle>,
+  elevation: UnitizedNumber<Length>,
+  options?: FixDirectiveRestOptions
+): FixDirective {
+  const result: FixDirective = {
+    type: SrvLineType.FixDirective,
+    station,
+    elevation,
+    ...options,
+  }
+  if (x.unit.type === Length.type) {
+    result.easting = x as UnitizedNumber<Length>
+  } else {
+    result.longitude = x as UnitizedNumber<Angle>
+  }
+  if (y.unit.type === Length.type) {
+    result.northing = y as UnitizedNumber<Length>
+  } else {
+    result.latitude = y as UnitizedNumber<Angle>
+  }
+  return result
 }
 
 export type PrefixDirective = {
@@ -661,20 +709,33 @@ export const dateDirective = (
   comment,
 })
 
-export type Shot = {
-  type: SrvLineType.Shot
-  from?: string | null | undefined
-  to?: string | null | undefined
-  distance?: UnitizedNumber<Length> | null | undefined
+export type CompassAndTapeMeasurements = {
+  type: ShotType.CompassAndTape
+  distance: UnitizedNumber<Length>
   frontsightAzimuth?: UnitizedNumber<Angle> | null | undefined
   backsightAzimuth?: UnitizedNumber<Angle> | null | undefined
   frontsightInclination?: UnitizedNumber<Angle> | null | undefined
   backsightInclination?: UnitizedNumber<Angle> | null | undefined
   instrumentHeight?: UnitizedNumber<Length> | null | undefined
   targetHeight?: UnitizedNumber<Length> | null | undefined
-  east?: UnitizedNumber<Length> | null | undefined
-  north?: UnitizedNumber<Length> | null | undefined
+}
+
+export type RectilinearMeasurements = {
+  type: ShotType.Rectilinear
+  easting: UnitizedNumber<Length>
+  northing: UnitizedNumber<Length>
   elevation?: UnitizedNumber<Length> | null | undefined
+}
+
+export type ShotMeasurements =
+  | CompassAndTapeMeasurements
+  | RectilinearMeasurements
+
+export type Shot = {
+  type: SrvLineType.Shot
+  from?: string | null | undefined
+  to?: string | null | undefined
+  measurements?: ShotMeasurements | null | undefined
   horizontalVariance?: VarianceAssignment | null | undefined
   verticalVariance?: VarianceAssignment | null | undefined
   left?: UnitizedNumber<Length> | null | undefined
@@ -720,8 +781,8 @@ export const defaultSrvSettings = (): SrvSettings => ({
     CompassAndTapeItem.Inclination,
   ],
   rectilinearOrder: [
-    RectilinearItem.East,
-    RectilinearItem.North,
+    RectilinearItem.Easting,
+    RectilinearItem.Northing,
     RectilinearItem.Elevation,
   ],
   primaryDistanceUnit: Length.meters,

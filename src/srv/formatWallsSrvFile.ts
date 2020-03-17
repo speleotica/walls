@@ -253,7 +253,7 @@ export function formatUnitsOption(
       return `CASE=${option.conversion}`
     case UnitsOptionType.LrudStyle:
       return `LRUD=${option.style}${
-        option.order ? `?${option.order.join('')}` : ''
+        option.order ? `:${option.order.join('')}` : ''
       }`
     case UnitsOptionType.Prefix:
       return `PREFIX${option.level === 1 ? '' : option.level}=${option.prefix}`
@@ -370,8 +370,8 @@ export function formatFixDirective(
     station,
     latitude,
     longitude,
-    east,
-    north,
+    easting,
+    northing,
     elevation,
     horizontalVariance,
     verticalVariance,
@@ -384,14 +384,14 @@ export function formatFixDirective(
 ): string {
   if (raw) return raw.value
   const parts = ['#FIX', station]
-  if (east && north) {
+  if (easting && northing) {
     for (const item of settings.rectilinearOrder) {
       switch (item) {
-        case RectilinearItem.East:
-          parts.push(formatLength(east, settings.primaryDistanceUnit))
+        case RectilinearItem.Easting:
+          parts.push(formatLength(easting, settings.primaryDistanceUnit))
           break
-        case RectilinearItem.North:
-          parts.push(formatLength(north, settings.primaryDistanceUnit))
+        case RectilinearItem.Northing:
+          parts.push(formatLength(northing, settings.primaryDistanceUnit))
           break
         case RectilinearItem.Elevation:
           parts.push(formatLength(elevation, settings.primaryDistanceUnit))
@@ -401,14 +401,14 @@ export function formatFixDirective(
   } else if (longitude && latitude) {
     for (const item of settings.rectilinearOrder) {
       switch (item) {
-        case RectilinearItem.East:
+        case RectilinearItem.Easting:
           parts.push(
             `${longitude.isNegative ? 'W' : 'E'}${longitude
               .abs()
               .get(Angle.degrees)}`
           )
           break
-        case RectilinearItem.North:
+        case RectilinearItem.Northing:
           parts.push(
             `${latitude.isNegative ? 'S' : 'N'}${latitude
               .abs()
@@ -421,7 +421,9 @@ export function formatFixDirective(
       }
     }
   } else {
-    throw new Error(`either east/north or latitude/longitude must be given`)
+    throw new Error(
+      `either easting/northing or latitude/longitude must be given`
+    )
   }
   if (horizontalVariance || verticalVariance) {
     parts.push(formatVariance(horizontalVariance, verticalVariance, settings))
@@ -536,16 +538,7 @@ export function formatShot(
   {
     from,
     to,
-    distance,
-    frontsightAzimuth,
-    backsightAzimuth,
-    frontsightInclination,
-    backsightInclination,
-    instrumentHeight,
-    targetHeight,
-    east,
-    north,
-    elevation,
+    measurements,
     horizontalVariance,
     verticalVariance,
     left,
@@ -573,60 +566,74 @@ export function formatShot(
   } = settings
   const parts = []
   parts.push(from || '-')
-  parts.push(to || '-')
-  if (settings.shotType === ShotType.CompassAndTape) {
-    for (const item of compassAndTapeOrder) {
-      switch (item) {
-        case CompassAndTapeItem.Distance:
-          parts.push(
-            distance ? formatLength(distance, primaryDistanceUnit) : '--'
-          )
-          break
-        case CompassAndTapeItem.Azimuth:
-          parts.push(
-            formatAzimuths(frontsightAzimuth, backsightAzimuth, settings)
-          )
-          break
-        case CompassAndTapeItem.Inclination:
-          parts.push(
-            formatInclinations(
-              frontsightInclination,
-              backsightInclination,
-              settings
-            )
-          )
-          break
-      }
-    }
-    if (instrumentHeight || targetHeight) {
-      parts.push(
-        instrumentHeight
-          ? formatLength(instrumentHeight, secondaryDistanceUnit)
-          : '--'
-      )
-      parts.push(
-        targetHeight ? formatLength(targetHeight, secondaryDistanceUnit) : '--'
-      )
-    }
-  } else if (settings.shotType === ShotType.Rectilinear) {
-    for (const item of rectilinearOrder) {
-      switch (item) {
-        case RectilinearItem.East:
-          parts.push(east ? formatLength(east, primaryDistanceUnit) : '--')
-          break
-        case RectilinearItem.North:
-          parts.push(north ? formatLength(north, primaryDistanceUnit) : '--')
-          break
-        case RectilinearItem.Elevation:
-          parts.push(
-            elevation ? formatLength(elevation, primaryDistanceUnit) : '--'
-          )
-          break
-      }
-    }
+  if (to || measurements) {
+    parts.push(to || '-')
   }
-  if (horizontalVariance || verticalVariance) {
-    parts.push(formatVariance(horizontalVariance, verticalVariance, settings))
+  if (measurements) {
+    if (measurements.type === ShotType.CompassAndTape) {
+      const {
+        distance,
+        frontsightAzimuth,
+        backsightAzimuth,
+        frontsightInclination,
+        backsightInclination,
+        instrumentHeight,
+        targetHeight,
+      } = measurements
+      for (const item of compassAndTapeOrder) {
+        switch (item) {
+          case CompassAndTapeItem.Distance:
+            parts.push(formatLength(distance, primaryDistanceUnit))
+            break
+          case CompassAndTapeItem.Azimuth:
+            parts.push(
+              formatAzimuths(frontsightAzimuth, backsightAzimuth, settings)
+            )
+            break
+          case CompassAndTapeItem.Inclination:
+            parts.push(
+              formatInclinations(
+                frontsightInclination,
+                backsightInclination,
+                settings
+              )
+            )
+            break
+        }
+      }
+      if (instrumentHeight || targetHeight) {
+        parts.push(
+          instrumentHeight
+            ? formatLength(instrumentHeight, secondaryDistanceUnit)
+            : '--'
+        )
+        parts.push(
+          targetHeight
+            ? formatLength(targetHeight, secondaryDistanceUnit)
+            : '--'
+        )
+      }
+    } else if (measurements.type === ShotType.Rectilinear) {
+      const { easting, northing, elevation } = measurements
+      for (const item of rectilinearOrder) {
+        switch (item) {
+          case RectilinearItem.Easting:
+            parts.push(formatLength(easting, primaryDistanceUnit))
+            break
+          case RectilinearItem.Northing:
+            parts.push(formatLength(northing, primaryDistanceUnit))
+            break
+          case RectilinearItem.Elevation:
+            parts.push(
+              elevation ? formatLength(elevation, primaryDistanceUnit) : '--'
+            )
+            break
+        }
+      }
+    }
+    if (horizontalVariance || verticalVariance) {
+      parts.push(formatVariance(horizontalVariance, verticalVariance, settings))
+    }
   }
   if (left || right || up || down) {
     const lrudParts = []
