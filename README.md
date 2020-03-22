@@ -6,26 +6,20 @@
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![npm version](https://badge.fury.io/js/%40speleotica%2Fwalls.svg)](https://badge.fury.io/js/%40speleotica%2Fwalls)
 
-This is my personal skeleton for creating an typescript library npm package. You are welcome to use it.
+Types and I/O methods for Walls Cave Survey data file formats
 
-## Quick start
+I'm not going to go to much trouble to document it here unless people ask,
+the types are pretty self-explanatory:
 
-```sh
-npx 0-60 clone https://github.com/speleotica/walls.git
+- [`WallsSrvFile`](/src/srv/WallsSrvFile.ts)
+
+## [`formatWallsSrvFile`](/src/dat/formatWallsSrvFile.ts)
+
+```js
+import formatWallsSrvFile from '@speleotica/walls/srv/formatWallsSrvFile'
 ```
 
-## Tools used
-
-- babel 7
-- typescript
-- mocha
-- chai
-- istanbul
-- nyc
-- eslint
-- prettier
-- husky
-- semantic-release
-- renovate
-- Circle CI
-- Codecov.io
+It takes a `WallsSrvFile`, and optionally an options hash with a `write` function.
+If you don't provide `write`, it will return the output as a `string`. Otherwise,
+it will call `write` with chunks of data, so you can pass `write` connected to a
+file write stream.
