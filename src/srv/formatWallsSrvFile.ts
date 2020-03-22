@@ -96,10 +96,16 @@ export function formatLength(
     }
     case Length.inches: {
       const value = length.get(Length.inches)
-      if (value % 12) {
-        return `${Math.floor(value / 12)}i${value % 12}`
-      }
+      return `${Math.floor(value / 12)}i${value % 12}`
+    }
+    case Length.miles:
+    case Length.yards: {
       length = length.in(Length.feet)
+      break
+    }
+    case Length.centimeters:
+    case Length.kilometers: {
+      length = length.in(Length.meters)
       break
     }
     default: {
@@ -110,6 +116,14 @@ export function formatLength(
   return length.unit === defaultUnit
     ? String(value)
     : `${value}${unitSuffix(length.unit)}`
+}
+
+export function formatOptionalLength(
+  length: UnitizedNumber<Length> | null | undefined,
+  defaultUnit: Unit<Length>
+): string {
+  if (!length?.isFinite) return '--'
+  return formatLength(length, defaultUnit)
 }
 
 export function formatAzimuth(
@@ -180,29 +194,20 @@ export function formatUnitsOption(
       return `D=${formatLengthUnitForDirective(option.unit)}`
     case UnitsOptionType.SecondaryDistanceUnit:
       return `S=${formatLengthUnitForDirective(option.unit)}`
-    case UnitsOptionType.BacksightAzimuthUnit:
-      return `A=${formatAzimuthUnitForDirective(option.unit)}`
     case UnitsOptionType.FrontsightAzimuthUnit:
+      return `A=${formatAzimuthUnitForDirective(option.unit)}`
+    case UnitsOptionType.BacksightAzimuthUnit:
       return `AB=${formatAzimuthUnitForDirective(option.unit)}`
-    case UnitsOptionType.BacksightInclinationUnit:
-      return `V=${formatInclinationUnitForDirective(option.unit)}`
     case UnitsOptionType.FrontsightInclinationUnit:
+      return `V=${formatInclinationUnitForDirective(option.unit)}`
+    case UnitsOptionType.BacksightInclinationUnit:
       return `VB=${formatInclinationUnitForDirective(option.unit)}`
     case UnitsOptionType.MagneticDeclination:
-      return `DECL=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
+      return `DECL=${formatAzimuth(option.trueNorthOffset, Angle.degrees)}`
     case UnitsOptionType.GridNorthCorrection:
-      return `GRID=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
+      return `GRID=${formatAzimuth(option.trueNorthOffset, Angle.degrees)}`
     case UnitsOptionType.RectilinearNorthCorrection:
-      return `RECT=${formatAzimuth(
-        option.trueNorthOffset,
-        settings.frontsightAzimuthUnit
-      )}`
+      return `RECT=${formatAzimuth(option.trueNorthOffset, Angle.degrees)}`
     case UnitsOptionType.DistanceCorrection:
       return `INCD=${formatLength(
         option.correction,
@@ -214,17 +219,17 @@ export function formatUnitsOption(
         settings.frontsightAzimuthUnit
       )}`
     case UnitsOptionType.BacksightAzimuthCorrection:
-      return `INCA=${formatAzimuth(
+      return `INCAB=${formatAzimuth(
         option.correction,
         settings.backsightAzimuthUnit
       )}`
     case UnitsOptionType.FrontsightInclinationCorrection:
-      return `INCA=${formatInclination(
+      return `INCV=${formatInclination(
         option.correction,
         settings.frontsightInclinationUnit
       )}`
     case UnitsOptionType.BacksightInclinationCorrection:
-      return `INCA=${formatInclination(
+      return `INCVB=${formatInclination(
         option.correction,
         settings.backsightInclinationUnit
       )}`
@@ -256,7 +261,9 @@ export function formatUnitsOption(
         option.order ? `:${option.order.join('')}` : ''
       }`
     case UnitsOptionType.Prefix:
-      return `PREFIX${option.level === 1 ? '' : option.level}=${option.prefix}`
+      return `PREFIX${option.level === 1 ? '' : option.level}${
+        option.prefix ? `=${option.prefix}` : ''
+      }`
     case UnitsOptionType.TapingMethod:
       return `TAPE=${option.tapingMethod}`
     case UnitsOptionType.UnitVariance:
@@ -321,7 +328,7 @@ export function formatUnitsDirective(
         break
     }
   }
-  if (comment) parts.push(`; ${comment}`)
+  if (comment) parts.push(`;${comment}`)
   return parts.join(' ') + '\r\n'
 }
 
@@ -331,7 +338,7 @@ export function formatSegmentDirective({
   raw,
 }: SegmentDirective): string {
   if (raw) return raw.value
-  return `#SEGMENT ${segment}${comment ? ` ; ${comment}` : ''}\r\n`
+  return `#SEGMENT\t${segment}${comment ? `\t;${comment}` : ''}\r\n`
 }
 
 export function formatVarianceAssignment(
@@ -430,8 +437,8 @@ export function formatFixDirective(
   }
   if (note) parts.push(`/${note}`)
   if (segment) parts.push(`#SEGMENT ${segment}`)
-  if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ') + '\r\n'
+  if (comment) parts.push(`;${comment}`)
+  return parts.join('\t') + '\r\n'
 }
 
 export function formatPrefixDirective({
@@ -443,8 +450,8 @@ export function formatPrefixDirective({
   if (raw) return raw.value
   const parts = [`#PREFIX${level === 1 ? '' : level}`]
   if (prefix) parts.push(prefix)
-  if (comment) parts.push(`; ${comment}`)
-  return parts.join(' ') + '\r\n'
+  if (comment) parts.push(`;${comment}`)
+  return parts.join('\t') + '\r\n'
 }
 
 export function formatNoteDirective({
@@ -454,7 +461,7 @@ export function formatNoteDirective({
   raw,
 }: NoteDirective): string {
   if (raw) return raw.value
-  return `#NOTE ${station} ${note}${comment ? `; ${comment}` : ''}\r\n`
+  return `#NOTE\t${station}\t${note}${comment ? `\t;${comment}` : ''}\r\n`
 }
 
 export function formatFlagDirective({
@@ -464,8 +471,8 @@ export function formatFlagDirective({
   raw,
 }: FlagDirective): string {
   if (raw) return raw.value
-  return `#FLAG ${stations.join(' ')} /${flag}${
-    comment ? `; ${comment}` : ''
+  return `#FLAG\t${stations.join('\t')}\t/${flag}${
+    comment ? `\t;${comment}` : ''
   }\r\n`
 }
 
@@ -483,9 +490,9 @@ export function formatSymbolDirective({
   raw,
 }: SymbolDirective): string {
   if (raw) return raw.value
-  return `#SYMBOL ${opacity || '-'}${shape || '-'}${pointSize ?? '-'}${
-    color ? formatColor(color) : ''
-  } /${flag}${comment ? `; ${comment}` : ''}\r\n`
+  return `#SYMBOL\t${opacity || '-'}${shape || '-'}${pointSize ?? '-'}${
+    color ? `\t${formatColor(color)}` : ''
+  }${flag ? `\t/${flag}` : ''}${comment ? `\t;${comment}` : ''}\r\n`
 }
 
 export function formatDateDirective({
@@ -494,11 +501,11 @@ export function formatDateDirective({
   raw,
 }: DateDirective): string {
   if (raw) return raw.value
-  return `#DATE ${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
+  return `#DATE\t${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,
     '0'
   )}-${String(date.getDate()).padStart(2, '0')}${
-    comment ? `; ${comment}` : ''
+    comment ? `\t;${comment}` : ''
   }\r\n`
 }
 
@@ -603,15 +610,9 @@ export function formatShot(
       }
       if (instrumentHeight || targetHeight) {
         parts.push(
-          instrumentHeight
-            ? formatLength(instrumentHeight, secondaryDistanceUnit)
-            : '--'
+          formatOptionalLength(instrumentHeight, secondaryDistanceUnit)
         )
-        parts.push(
-          targetHeight
-            ? formatLength(targetHeight, secondaryDistanceUnit)
-            : '--'
-        )
+        parts.push(formatOptionalLength(targetHeight, secondaryDistanceUnit))
       }
     } else if (measurements.type === ShotType.Rectilinear) {
       const { easting, northing, elevation } = measurements
@@ -640,22 +641,16 @@ export function formatShot(
     for (const item of lrudOrder) {
       switch (item) {
         case LrudItem.Left:
-          lrudParts.push(
-            left ? formatLength(left, secondaryDistanceUnit) : '--'
-          )
+          lrudParts.push(formatOptionalLength(left, secondaryDistanceUnit))
           break
         case LrudItem.Right:
-          lrudParts.push(
-            right ? formatLength(right, secondaryDistanceUnit) : '--'
-          )
+          lrudParts.push(formatOptionalLength(right, secondaryDistanceUnit))
           break
         case LrudItem.Up:
-          lrudParts.push(up ? formatLength(up, secondaryDistanceUnit) : '--')
+          lrudParts.push(formatOptionalLength(up, secondaryDistanceUnit))
           break
         case LrudItem.Down:
-          lrudParts.push(
-            down ? formatLength(down, secondaryDistanceUnit) : '--'
-          )
+          lrudParts.push(formatOptionalLength(down, secondaryDistanceUnit))
           break
       }
     }
@@ -672,7 +667,7 @@ export function formatShot(
     parts.push(`<${lrudParts.join(',')}>`)
   }
   if (segment) parts.push(`#SEGMENT ${segment}`)
-  if (comment) parts.push(`; ${comment}`)
+  if (comment) parts.push(`;${comment}`)
   return parts.join('\t') + '\r\n'
 }
 
@@ -680,7 +675,7 @@ export function formatComment({ comment, raw, block }: Comment): string {
   if (raw) return raw.value
   return block || /[\r\n]/.test(comment)
     ? `#[\r\n${comment.replace(/\r\n?|\n/gm, '\r\n')}\r\n#]\r\n`
-    : `; ${comment}\r\n`
+    : `;${comment}\r\n`
 }
 
 export function formatSrvLine(line: SrvLine, settings: SrvSettings): string {

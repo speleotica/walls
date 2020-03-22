@@ -520,13 +520,36 @@ export enum VarianceAssignmentType {
   FloatTraverse = '*',
 }
 
+export type LengthVarianceAssignment = {
+  type: VarianceAssignmentType.Length | VarianceAssignmentType.RMSError
+  length: UnitizedNumber<Length>
+}
+
 export type VarianceAssignment =
-  | {
-      type: VarianceAssignmentType.Length | VarianceAssignmentType.RMSError
-      length: UnitizedNumber<Length>
-    }
+  | LengthVarianceAssignment
   | { type: VarianceAssignmentType.FloatShot }
   | { type: VarianceAssignmentType.FloatTraverse }
+
+export const lengthVarianceAssignment = (
+  length: UnitizedNumber<Length>
+): LengthVarianceAssignment => ({
+  type: VarianceAssignmentType.Length,
+  length,
+})
+
+export const rmsErrorVarianceAssignment = (
+  length: UnitizedNumber<Length>
+): LengthVarianceAssignment => ({
+  type: VarianceAssignmentType.RMSError,
+  length,
+})
+
+export const floatShotVarianceAssignment = (): VarianceAssignment => ({
+  type: VarianceAssignmentType.FloatShot,
+})
+export const floatTraverseVarianceAssignment = (): VarianceAssignment => ({
+  type: VarianceAssignmentType.FloatTraverse,
+})
 
 export type FixDirective = {
   type: SrvLineType.FixDirective
@@ -557,21 +580,21 @@ export function fixDirective(
   latitude: UnitizedNumber<Angle>,
   longitude: UnitizedNumber<Angle>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions
+  options?: FixDirectiveRestOptions | null | undefined
 ): FixDirective
 export function fixDirective(
   station: string,
   easting: UnitizedNumber<Length>,
   northing: UnitizedNumber<Length>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions
+  options?: FixDirectiveRestOptions | null | undefined
 ): FixDirective
 export function fixDirective(
   station: string,
   x: UnitizedNumber<Length> | UnitizedNumber<Angle>,
   y: UnitizedNumber<Length> | UnitizedNumber<Angle>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions
+  options?: FixDirectiveRestOptions | null | undefined
 ): FixDirective {
   const result: FixDirective = {
     type: SrvLineType.FixDirective,
@@ -618,7 +641,6 @@ export type NoteDirective = {
   raw?: Segment | null | undefined
 }
 export const noteDirective = (
-  level: 1 | 2 | 3,
   station: string,
   note: string,
   comment?: string | null | undefined
@@ -637,7 +659,6 @@ export type FlagDirective = {
   raw?: Segment | null | undefined
 }
 export const flagDirective = (
-  level: 1 | 2 | 3,
   stations: string[],
   flag: string,
   comment?: string | null | undefined
@@ -755,6 +776,8 @@ type ShotRestOptions = {
   cFlag?: boolean | null | undefined
   segment?: string | null | undefined
   comment?: string | null | undefined
+  horizontalVariance?: VarianceAssignment | null | undefined
+  verticalVariance?: VarianceAssignment | null | undefined
 }
 
 type CompassAndTapeShotRestOptions = {
@@ -763,6 +786,8 @@ type CompassAndTapeShotRestOptions = {
   comment?: string | null | undefined
   instrumentHeight?: UnitizedNumber<Length> | null | undefined
   targetHeight?: UnitizedNumber<Length> | null | undefined
+  horizontalVariance?: VarianceAssignment | null | undefined
+  verticalVariance?: VarianceAssignment | null | undefined
 }
 
 type BuilderLruds =
@@ -808,8 +833,8 @@ export const compassAndTapeShot = (
       ]
     | null
     | undefined,
-  lruds?: BuilderLruds,
-  options?: CompassAndTapeShotRestOptions
+  lruds?: BuilderLruds | null | undefined,
+  options?: CompassAndTapeShotRestOptions | null | undefined
 ): Shot => {
   const { instrumentHeight, targetHeight, ...rest } = options || {}
   return {
@@ -846,8 +871,8 @@ export const rectilinearShot = (
   easting: UnitizedNumber<Length>,
   northing: UnitizedNumber<Length>,
   elevation: UnitizedNumber<Length>,
-  lruds?: BuilderLruds,
-  options?: ShotRestOptions
+  lruds?: BuilderLruds | null | undefined,
+  options?: ShotRestOptions | null | undefined
 ): Shot => ({
   type: SrvLineType.Shot,
   from,
@@ -870,8 +895,8 @@ export const rectilinearShot = (
 
 export const stationLruds = (
   station: string,
-  lruds?: BuilderLruds,
-  options?: ShotRestOptions
+  lruds?: BuilderLruds | null | undefined,
+  options?: ShotRestOptions | null | undefined
 ): Shot => ({
   type: SrvLineType.Shot,
   from: station,
