@@ -23,3 +23,16 @@ It takes a `WallsSrvFile`, and optionally an options hash with a `write` functio
 If you don't provide `write`, it will return the output as a `string`. Otherwise,
 it will call `write` with chunks of data, so you can pass `write` connected to a
 file write stream.
+
+- [`WallsWpjFile`](/src/wpj/WallsWpjFile.ts)
+
+## [`formatWallsWpjFile`](/src/dat/formatWallsWpjFile.ts)
+
+```js
+import formatWallsWpjFile from '@speleotica/walls/wpj/formatWallsWpjFile'
+```
+
+It takes a `WallsWpjFile`, and optionally an options hash with a `write` function.
+If you don't provide `write`, it will return the output as a `string`. Otherwise,
+it will call `write` with chunks of data, so you can pass `write` connected to a
+file write stream.
