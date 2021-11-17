@@ -1,4 +1,5 @@
 import { UnitizedNumber, Length, Angle, Unit } from '@speleotica/unitized'
+import { WallsSrvFile } from '../srv/WallsSrvFile'
 
 export enum DisplayLatLongFormat {
   Degrees,
@@ -126,20 +127,20 @@ export enum WallsProjectEntryType {
 
 interface WallsProjectEntryBase {
   title: string
-  name?: string | null | undefined
-  path?: string | null | undefined
-  options?: string | null | undefined
-  georeference?: Georeference | null | undefined
+  name?: string | null
+  path?: string | null
+  options?: string | null
+  georeference?: Georeference | null
   detached: boolean
   nameDefinesSegment: boolean
   reviewDistanceUnit: Unit<Length>
-  useGeoreference?: boolean | null | undefined
-  deriveMagneticDeclination?: boolean | null | undefined
-  gridRelative?: boolean | null | undefined
-  preserveVertShotOrientation?: boolean | null | undefined
-  preserveVertShotLength?: boolean | null | undefined
+  useGeoreference?: boolean | null
+  deriveMagneticDeclination?: boolean | null
+  gridRelative?: boolean | null
+  preserveVertShotOrientation?: boolean | null
+  preserveVertShotLength?: boolean | null
   launchAction: LaunchAction
-  defaultViewAfterCompilation?: View | null | undefined
+  defaultViewAfterCompilation?: View | null
   processSvgIfAttached: boolean
 }
 
@@ -190,23 +191,28 @@ export function getStatus(entry: WallsProjectEntry): number {
 }
 
 type WallsProjectEntryRestOptions = {
-  options?: string | null | undefined
-  georeference?: Georeference | null | undefined
-  detached?: boolean | null | undefined
-  nameDefinesSegment?: boolean | null | undefined
-  reviewDistanceUnit?: Unit<Length> | null | undefined
-  useGeoreference?: boolean | null | undefined
-  deriveMagneticDeclination?: boolean | null | undefined
-  gridRelative?: boolean | null | undefined
-  preserveVertShotOrientation?: boolean | null | undefined
-  preserveVertShotLength?: boolean | null | undefined
-  launchAction?: LaunchAction | null | undefined
-  defaultViewAfterCompilation?: View | null | undefined
-  processSvgIfAttached?: boolean | null | undefined
+  options?: string | null
+  georeference?: Georeference | null
+  detached?: boolean | null
+  nameDefinesSegment?: boolean | null
+  reviewDistanceUnit?: Unit<Length> | null
+  useGeoreference?: boolean | null
+  deriveMagneticDeclination?: boolean | null
+  gridRelative?: boolean | null
+  preserveVertShotOrientation?: boolean | null
+  preserveVertShotLength?: boolean | null
+  launchAction?: LaunchAction | null
+  defaultViewAfterCompilation?: View | null
+  processSvgIfAttached?: boolean | null
+}
+
+type WallsProjectSurveyRestOptions = WallsProjectEntryRestOptions & {
+  content?: WallsSrvFile | null
 }
 
 export interface WallsProjectSurvey extends WallsProjectEntryBase {
   type: WallsProjectEntryType.Survey
+  content?: WallsSrvFile | null
 }
 
 export const wallsProjectSurvey = (
@@ -220,7 +226,7 @@ export const wallsProjectSurvey = (
     launchAction,
     processSvgIfAttached,
     ...rest
-  }: WallsProjectEntryRestOptions = {}
+  }: WallsProjectSurveyRestOptions = {}
 ): WallsProjectSurvey => ({
   type: WallsProjectEntryType.Survey,
   title,

@@ -368,7 +368,7 @@ export enum LrudItem {
 export type LrudStyleOption = {
   type: UnitsOptionType.LrudStyle
   style: LrudStyle
-  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null | undefined
+  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null
 }
 export const lrudStyleOption = (
   style: LrudStyle,
@@ -382,7 +382,7 @@ export const lrudStyleOption = (
 export type PrefixOption = {
   type: UnitsOptionType.Prefix
   level: 1 | 2 | 3
-  prefix?: string | null | undefined
+  prefix?: string | null
 }
 export const prefixOption = (
   level: 1 | 2 | 3,
@@ -439,7 +439,7 @@ export const verticalUnitVarianceOption = (
 
 export type FlagOption = {
   type: UnitsOptionType.Flag
-  flag?: string | null | undefined
+  flag?: string | null
 }
 export const flagOption = (flag: string | null | undefined): FlagOption => ({
   type: UnitsOptionType.Flag,
@@ -449,7 +449,7 @@ export const flagOption = (flag: string | null | undefined): FlagOption => ({
 export type MacroOption = {
   type: UnitsOptionType.Macro
   name: string
-  replacement?: string | null | undefined
+  replacement?: string | null
 }
 export const macroOption = (
   name: string,
@@ -485,8 +485,8 @@ export type UnitsOption =
 export type UnitsDirective = {
   type: SrvLineType.UnitsDirective
   options: UnitsOption[]
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  comment?: string | null
+  raw?: Segment | null
 }
 
 export const unitsDirective = (
@@ -501,8 +501,8 @@ export const unitsDirective = (
 export type SegmentDirective = {
   type: SrvLineType.SegmentDirective
   segment: string
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  comment?: string | null
+  raw?: Segment | null
 }
 export const segmentDirective = (
   segment: string,
@@ -554,25 +554,25 @@ export const floatTraverseVarianceAssignment = (): VarianceAssignment => ({
 export type FixDirective = {
   type: SrvLineType.FixDirective
   station: string
-  latitude?: UnitizedNumber<Angle> | null | undefined
-  longitude?: UnitizedNumber<Angle> | null | undefined
-  easting?: UnitizedNumber<Length> | null | undefined
-  northing?: UnitizedNumber<Length> | null | undefined
+  latitude?: UnitizedNumber<Angle> | null
+  longitude?: UnitizedNumber<Angle> | null
+  easting?: UnitizedNumber<Length> | null
+  northing?: UnitizedNumber<Length> | null
   elevation: UnitizedNumber<Length>
-  horizontalVariance?: VarianceAssignment | null | undefined
-  verticalVariance?: VarianceAssignment | null | undefined
-  note?: string | null | undefined
-  segment?: string | null | undefined
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  horizontalVariance?: VarianceAssignment | null
+  verticalVariance?: VarianceAssignment | null
+  note?: string | null
+  segment?: string | null
+  comment?: string | null
+  raw?: Segment | null
 }
 
 type FixDirectiveRestOptions = {
-  horizontalVariance?: VarianceAssignment | null | undefined
-  verticalVariance?: VarianceAssignment | null | undefined
-  note?: string | null | undefined
-  segment?: string | null | undefined
-  comment?: string | null | undefined
+  horizontalVariance?: VarianceAssignment | null
+  verticalVariance?: VarianceAssignment | null
+  note?: string | null
+  segment?: string | null
+  comment?: string | null
 }
 
 export function fixDirective(
@@ -618,9 +618,9 @@ export function fixDirective(
 export type PrefixDirective = {
   type: SrvLineType.PrefixDirective
   level: 1 | 2 | 3
-  prefix?: string | null | undefined
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  prefix?: string | null
+  comment?: string | null
+  raw?: Segment | null
 }
 export const prefixDirective = (
   level: 1 | 2 | 3,
@@ -637,8 +637,8 @@ export type NoteDirective = {
   type: SrvLineType.NoteDirective
   station: string
   note: string
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  comment?: string | null
+  raw?: Segment | null
 }
 export const noteDirective = (
   station: string,
@@ -655,8 +655,8 @@ export type FlagDirective = {
   type: SrvLineType.FlagDirective
   stations: string[]
   flag: string
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  comment?: string | null
+  raw?: Segment | null
 }
 export const flagDirective = (
   stations: string[],
@@ -690,13 +690,13 @@ export type Color = {
 
 export type SymbolDirective = {
   type: SrvLineType.SymbolDirective
-  opacity?: SymbolOpacity | null | undefined
-  shape?: SymbolShape | null | undefined
-  pointSize?: number | null | undefined
-  color?: Color | null | undefined
-  flag?: string | null | undefined
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  opacity?: SymbolOpacity | null
+  shape?: SymbolShape | null
+  pointSize?: number | null
+  color?: Color | null
+  flag?: string | null
+  comment?: string | null
+  raw?: Segment | null
 }
 export const symbolDirective = (
   opacity: SymbolOpacity | null | undefined,
@@ -718,8 +718,8 @@ export const symbolDirective = (
 export type DateDirective = {
   type: SrvLineType.DateDirective
   date: Date
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  comment?: string | null
+  raw?: Segment | null
 }
 export const dateDirective = (
   date: Date,
@@ -733,19 +733,19 @@ export const dateDirective = (
 export type CompassAndTapeMeasurements = {
   type: ShotType.CompassAndTape
   distance: UnitizedNumber<Length>
-  frontsightAzimuth?: UnitizedNumber<Angle> | null | undefined
-  backsightAzimuth?: UnitizedNumber<Angle> | null | undefined
-  frontsightInclination?: UnitizedNumber<Angle> | null | undefined
-  backsightInclination?: UnitizedNumber<Angle> | null | undefined
-  instrumentHeight?: UnitizedNumber<Length> | null | undefined
-  targetHeight?: UnitizedNumber<Length> | null | undefined
+  frontsightAzimuth?: UnitizedNumber<Angle> | null
+  backsightAzimuth?: UnitizedNumber<Angle> | null
+  frontsightInclination?: UnitizedNumber<Angle> | null
+  backsightInclination?: UnitizedNumber<Angle> | null
+  instrumentHeight?: UnitizedNumber<Length> | null
+  targetHeight?: UnitizedNumber<Length> | null
 }
 
 export type RectilinearMeasurements = {
   type: ShotType.Rectilinear
   easting: UnitizedNumber<Length>
   northing: UnitizedNumber<Length>
-  elevation?: UnitizedNumber<Length> | null | undefined
+  elevation?: UnitizedNumber<Length> | null
 }
 
 export type ShotMeasurements =
@@ -754,40 +754,40 @@ export type ShotMeasurements =
 
 export type Shot = {
   type: SrvLineType.Shot
-  from?: string | null | undefined
-  to?: string | null | undefined
-  measurements?: ShotMeasurements | null | undefined
-  horizontalVariance?: VarianceAssignment | null | undefined
-  verticalVariance?: VarianceAssignment | null | undefined
-  left?: UnitizedNumber<Length> | null | undefined
-  right?: UnitizedNumber<Length> | null | undefined
-  up?: UnitizedNumber<Length> | null | undefined
-  down?: UnitizedNumber<Length> | null | undefined
-  lrudFacingAzimuth?: UnitizedNumber<Angle> | null | undefined
-  leftAzimuth?: UnitizedNumber<Angle> | null | undefined
-  rightAzimuth?: UnitizedNumber<Angle> | null | undefined
-  cFlag?: boolean | null | undefined
-  segment?: string | null | undefined
-  comment?: string | null | undefined
-  raw?: Segment | null | undefined
+  from?: string | null
+  to?: string | null
+  measurements?: ShotMeasurements | null
+  horizontalVariance?: VarianceAssignment | null
+  verticalVariance?: VarianceAssignment | null
+  left?: UnitizedNumber<Length> | null
+  right?: UnitizedNumber<Length> | null
+  up?: UnitizedNumber<Length> | null
+  down?: UnitizedNumber<Length> | null
+  lrudFacingAzimuth?: UnitizedNumber<Angle> | null
+  leftAzimuth?: UnitizedNumber<Angle> | null
+  rightAzimuth?: UnitizedNumber<Angle> | null
+  cFlag?: boolean | null
+  segment?: string | null
+  comment?: string | null
+  raw?: Segment | null
 }
 
 type ShotRestOptions = {
-  cFlag?: boolean | null | undefined
-  segment?: string | null | undefined
-  comment?: string | null | undefined
-  horizontalVariance?: VarianceAssignment | null | undefined
-  verticalVariance?: VarianceAssignment | null | undefined
+  cFlag?: boolean | null
+  segment?: string | null
+  comment?: string | null
+  horizontalVariance?: VarianceAssignment | null
+  verticalVariance?: VarianceAssignment | null
 }
 
 type CompassAndTapeShotRestOptions = {
-  cFlag?: boolean | null | undefined
-  segment?: string | null | undefined
-  comment?: string | null | undefined
-  instrumentHeight?: UnitizedNumber<Length> | null | undefined
-  targetHeight?: UnitizedNumber<Length> | null | undefined
-  horizontalVariance?: VarianceAssignment | null | undefined
-  verticalVariance?: VarianceAssignment | null | undefined
+  cFlag?: boolean | null
+  segment?: string | null
+  comment?: string | null
+  instrumentHeight?: UnitizedNumber<Length> | null
+  targetHeight?: UnitizedNumber<Length> | null
+  horizontalVariance?: VarianceAssignment | null
+  verticalVariance?: VarianceAssignment | null
 }
 
 type BuilderLruds =
@@ -913,8 +913,8 @@ export const stationLruds = (
 export type Comment = {
   type: SrvLineType.Comment
   comment: string
-  block?: boolean | null | undefined
-  raw?: Segment | null | undefined
+  block?: boolean | null
+  raw?: Segment | null
 }
 export const comment = (comment: string): Comment => ({
   type: SrvLineType.Comment,
