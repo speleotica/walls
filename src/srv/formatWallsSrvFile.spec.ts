@@ -77,7 +77,7 @@ import { Length, Unitize, Angle } from '@speleotica/unitized'
 
 const settings = defaultSrvSettings()
 
-describe(`formatUnitsDirective`, function() {
+describe(`formatUnitsDirective`, function () {
   it('comment', () => {
     expect(
       formatUnitsDirective(
@@ -733,19 +733,19 @@ describe(`formatUnitsDirective`, function() {
     ).to.equal('$test="hello \\"world\\""')
   })
 })
-describe(`formatSegmentDirective`, function() {
-  it(`base`, function() {
+describe(`formatSegmentDirective`, function () {
+  it(`base`, function () {
     expect(formatSegmentDirective(segmentDirective('foo'))).to.equal(
       '#SEGMENT\tfoo\r\n'
     )
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(formatSegmentDirective(segmentDirective('foo', 'test'))).to.equal(
       '#SEGMENT\tfoo\t;test\r\n'
     )
   })
 })
-it(`formatVariance`, function() {
+it(`formatVariance`, function () {
   expect(formatVariance(null, null, settings)).to.equal('')
   expect(
     formatVariance(lengthVarianceAssignment(Unitize.feet(3)), null, settings)
@@ -779,8 +779,8 @@ it(`formatVariance`, function() {
     )
   ).to.equal('(?)')
 })
-describe(`formatFixDirective`, function() {
-  it(`long/lat`, function() {
+describe(`formatFixDirective`, function () {
+  it(`long/lat`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -793,7 +793,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\tE32.7\tN12.4\t5\r\n')
   })
-  it(`west longitude`, function() {
+  it(`west longitude`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -806,7 +806,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\tW173.5\tN12.4\t5\r\n')
   })
-  it(`south latitude`, function() {
+  it(`south latitude`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -820,7 +820,7 @@ describe(`formatFixDirective`, function() {
     ).to.equal('#FIX\tA\tE32.7\tS83.4\t5\r\n')
   })
 
-  it(`south latitude`, function() {
+  it(`south latitude`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -833,7 +833,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\tE32.7\tS83.4\t5\r\n')
   })
-  it(`variance`, function() {
+  it(`variance`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -847,7 +847,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\tE32.7\tS83.4\t5\t(20f,)\r\n')
   })
-  it(`elevation units`, function() {
+  it(`elevation units`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -861,7 +861,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\tE32.7\tS83.4\t-5280f\t(20f,)\r\n')
   })
-  it(`segment`, function() {
+  it(`segment`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -875,7 +875,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\t2\t3\t4\t#SEGMENT test\r\n')
   })
-  it(`note + segment`, function() {
+  it(`note + segment`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -889,7 +889,7 @@ describe(`formatFixDirective`, function() {
       )
     ).to.equal('#FIX\tA\t2\t3\t4\t/note\t#SEGMENT test\r\n')
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(
       formatFixDirective(
         fixDirective(
@@ -904,57 +904,57 @@ describe(`formatFixDirective`, function() {
     ).to.equal('#FIX\tA\t2\t3\t4\t;foo\r\n')
   })
 })
-describe(`formatPrefixDirective`, function() {
-  it(`level 1`, function() {
+describe(`formatPrefixDirective`, function () {
+  it(`level 1`, function () {
     expect(formatPrefixDirective(prefixDirective(1, 'foo'))).to.equal(
       '#PREFIX\tfoo\r\n'
     )
   })
-  it(`level 1 empty`, function() {
+  it(`level 1 empty`, function () {
     expect(formatPrefixDirective(prefixDirective(1, null))).to.equal(
       '#PREFIX\r\n'
     )
   })
-  it(`level 2`, function() {
+  it(`level 2`, function () {
     expect(formatPrefixDirective(prefixDirective(2, 'foo'))).to.equal(
       '#PREFIX2\tfoo\r\n'
     )
   })
-  it(`level 2 empty`, function() {
+  it(`level 2 empty`, function () {
     expect(formatPrefixDirective(prefixDirective(2, null))).to.equal(
       '#PREFIX2\r\n'
     )
   })
-  it(`level 3`, function() {
+  it(`level 3`, function () {
     expect(formatPrefixDirective(prefixDirective(3, 'foo'))).to.equal(
       '#PREFIX3\tfoo\r\n'
     )
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(formatPrefixDirective(prefixDirective(3, 'foo', 'blah'))).to.equal(
       '#PREFIX3\tfoo\t;blah\r\n'
     )
   })
 })
-describe(`formatNoteDirective`, function() {
-  it(`base`, function() {
+describe(`formatNoteDirective`, function () {
+  it(`base`, function () {
     expect(formatNoteDirective(noteDirective('A', 'test blah blah'))).to.equal(
       '#NOTE\tA\ttest blah blah\r\n'
     )
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(
       formatNoteDirective(noteDirective('A', 'test blah blah', 'floogh'))
     ).to.equal('#NOTE\tA\ttest blah blah\t;floogh\r\n')
   })
 })
-describe(`formatFlagDirective`, function() {
-  it(`base`, function() {
+describe(`formatFlagDirective`, function () {
+  it(`base`, function () {
     expect(
       formatFlagDirective(flagDirective(['A', 'B', 'C'], 'foo bar baz'))
     ).to.equal('#FLAG\tA\tB\tC\t/foo bar baz\r\n')
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(
       formatFlagDirective(
         flagDirective(['A', 'B', 'C'], 'foo bar baz', 'this is a comment')
@@ -962,13 +962,13 @@ describe(`formatFlagDirective`, function() {
     ).to.equal('#FLAG\tA\tB\tC\t/foo bar baz\t;this is a comment\r\n')
   })
 })
-describe(`formatDateDirective`, function() {
-  it(`base`, function() {
+describe(`formatDateDirective`, function () {
+  it(`base`, function () {
     expect(formatDateDirective(dateDirective(new Date('Aug 7 2019')))).to.equal(
       '#DATE\t2019-08-07\r\n'
     )
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(
       formatDateDirective(
         dateDirective(new Date('Aug 7 2019'), 'this is a comment')
@@ -976,8 +976,8 @@ describe(`formatDateDirective`, function() {
     ).to.equal('#DATE\t2019-08-07\t;this is a comment\r\n')
   })
 })
-describe(`formatShot`, function() {
-  it(`compass and tape`, function() {
+describe(`formatShot`, function () {
+  it(`compass and tape`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -991,7 +991,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\r\n')
   })
-  it(`instrument and target heights`, function() {
+  it(`instrument and target heights`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1044,7 +1044,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\t4\t--\r\n')
   })
-  it(`rectilinear`, function() {
+  it(`rectilinear`, function () {
     expect(
       formatShot(
         rectilinearShot(
@@ -1058,7 +1058,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\r\n')
   })
-  it(`segment`, function() {
+  it(`segment`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1074,7 +1074,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\t#SEGMENT foo/bar\r\n')
   })
-  it(`comment`, function() {
+  it(`comment`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1090,7 +1090,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\t;this is a comment\r\n')
   })
-  it(`variance`, function() {
+  it(`variance`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1120,7 +1120,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t2\t3\t(,?)\r\n')
   })
-  it(`LRUDs only`, function() {
+  it(`LRUDs only`, function () {
     expect(
       formatShot(
         stationLruds('A', [
@@ -1133,7 +1133,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\t<1,2,3,4>\r\n')
   })
-  it(`LRUDs only, facing azimuth`, function() {
+  it(`LRUDs only, facing azimuth`, function () {
     expect(
       formatShot(
         stationLruds('A', [
@@ -1147,7 +1147,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\t<1,2,3,4,320>\r\n')
   })
-  it(`LRUDs only, left/right azimuths`, function() {
+  it(`LRUDs only, left/right azimuths`, function () {
     expect(
       formatShot(
         stationLruds('A', [
@@ -1162,7 +1162,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\t<1,2,3,4,320,165>\r\n')
   })
-  it(`LRUDs only, different order`, function() {
+  it(`LRUDs only, different order`, function () {
     expect(
       formatShot(
         stationLruds('A', [
@@ -1183,7 +1183,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\t<4,3,2,1>\r\n')
   })
-  it(`LRUDs only, some missing`, function() {
+  it(`LRUDs only, some missing`, function () {
     expect(
       formatShot(
         stationLruds('A', [Unitize.meters(1), null, Unitize.meters(3), null]),
@@ -1191,7 +1191,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\t<1,--,3,-->\r\n')
   })
-  it(`missing azimuth`, function() {
+  it(`missing azimuth`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1205,7 +1205,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t--\t-90\r\n')
   })
-  it(`azimuth frontsight and backsight`, function() {
+  it(`azimuth frontsight and backsight`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1219,7 +1219,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t30/32\t-90\r\n')
   })
-  it(`backsight azimuth only`, function() {
+  it(`backsight azimuth only`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1233,7 +1233,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t--/32\t-90\r\n')
   })
-  it(`missing inclination`, function() {
+  it(`missing inclination`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1247,7 +1247,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t5\t--\r\n')
   })
-  it(`inclination frontsight and backsight`, function() {
+  it(`inclination frontsight and backsight`, function () {
     expect(
       formatShot(
         compassAndTapeShot('A', 'B', Unitize.meters(1), Unitize.degrees(5), [
@@ -1258,7 +1258,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t5\t4/5\r\n')
   })
-  it(`backsight inclination only`, function() {
+  it(`backsight inclination only`, function () {
     expect(
       formatShot(
         compassAndTapeShot('A', 'B', Unitize.meters(1), Unitize.degrees(5), [
@@ -1269,7 +1269,7 @@ describe(`formatShot`, function() {
       )
     ).to.equal('A\tB\t1\t5\t--/-5\r\n')
   })
-  it(`splays`, function() {
+  it(`splays`, function () {
     expect(
       formatShot(
         compassAndTapeShot(
@@ -1296,8 +1296,8 @@ describe(`formatShot`, function() {
     ).to.equal('A\t-\t1\t2\t3\r\n')
   })
 })
-describe(`formatWallsSrvFile`, function() {
-  it(`catchall test`, function() {
+describe(`formatWallsSrvFile`, function () {
+  it(`catchall test`, function () {
     expect(
       formatWallsSrvFile({
         lines: [

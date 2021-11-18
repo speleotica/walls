@@ -18,19 +18,19 @@ export default function applyUnitsOptions(
   },
   { options }: UnitsDirective
 ): void {
-  if (options.find(o => o.type === UnitsOptionType.Save)) {
+  if (options.find((o) => o.type === UnitsOptionType.Save)) {
     if (stack.length >= 11) {
       throw new Error(`can't push more than 10 saves`)
     }
     stack.push({ ...stack[stack.length - 1] })
   }
-  if (options.find(o => o.type === UnitsOptionType.Restore)) {
+  if (options.find((o) => o.type === UnitsOptionType.Restore)) {
     if (stack.length < 2) {
       throw new Error(`no more saves to restore`)
     }
     stack.pop()
   }
-  if (options.find(o => o.type === UnitsOptionType.Reset)) {
+  if (options.find((o) => o.type === UnitsOptionType.Reset)) {
     stack[stack.length - 1] = defaultSrvSettings()
   }
 

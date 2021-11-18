@@ -68,7 +68,7 @@ export function writeWallsProjectEntry(
   }
   if (entry.type === WallsProjectEntryType.Book) {
     const { children } = entry
-    children.forEach(entry => writeWallsProjectEntry(entry, write))
+    children.forEach((entry) => writeWallsProjectEntry(entry, write))
     write(`.ENDBOOK\r\n`)
   }
 }

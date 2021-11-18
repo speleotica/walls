@@ -11,14 +11,14 @@ import { Unitize } from '@speleotica/unitized'
 
 type DirContents = { [entry: string]: string | DirContents }
 
-describe(`writeWallsProject`, function() {
+describe(`writeWallsProject`, function () {
   let testDir = ''
 
   async function readDirContents(dir: string): Promise<DirContents> {
     const entries = await fs.readdir(dir)
     const result: DirContents = {}
     await Promise.all(
-      entries.map(async entry => {
+      entries.map(async (entry) => {
         const path = Path.resolve(dir, entry)
         if ((await fs.stat(path)).isDirectory()) {
           result[entry] = await readDirContents(path)
@@ -58,7 +58,7 @@ describe(`writeWallsProject`, function() {
     }
   }
 
-  beforeEach(async function() {
+  beforeEach(async function () {
     testDir = Path.resolve(
       __dirname,
       '..',
@@ -71,7 +71,7 @@ describe(`writeWallsProject`, function() {
     })
     await fs.mkdirp(testDir)
   })
-  afterEach(async function() {
+  afterEach(async function () {
     if (this.currentTest?.state !== 'failed') {
       await fs.remove(testDir).catch(() => {
         /* no-op */
@@ -79,7 +79,7 @@ describe(`writeWallsProject`, function() {
     }
   })
 
-  it(`basic test`, async function() {
+  it(`basic test`, async function () {
     await writeWallsProject(Path.resolve(testDir, 'test.wpj'), {
       root: wallsProjectBook('test', null, null, [
         wallsProjectSurvey('Survey 1', '1', null, {
@@ -112,7 +112,7 @@ describe(`writeWallsProject`, function() {
     })
   })
 
-  it(`book paths test`, async function() {
+  it(`book paths test`, async function () {
     await writeWallsProject(Path.resolve(testDir, 'test.wpj'), {
       root: wallsProjectBook('test', null, 'foo', [
         wallsProjectSurvey('Survey 1', '1', null, {
@@ -148,7 +148,7 @@ describe(`writeWallsProject`, function() {
     })
   })
 
-  it(`survey paths test`, async function() {
+  it(`survey paths test`, async function () {
     await writeWallsProject(Path.resolve(testDir, 'test.wpj'), {
       root: wallsProjectBook('test', null, null, [
         wallsProjectSurvey('Survey 1', '1', 'foo', {

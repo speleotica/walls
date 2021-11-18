@@ -19,7 +19,7 @@ async function writeSurveys(
   switch (entry.type) {
     case WallsProjectEntryType.Book: {
       await Promise.all(
-        entry.children.map(child => writeSurveys(childPath, child))
+        entry.children.map((child) => writeSurveys(childPath, child))
       )
       break
     }

@@ -174,7 +174,7 @@ const quoted: Record<string, string> = {
 }
 
 export function quote(str: string): string {
-  return `"${str.replace(/["\\\n\t\r]/g, match => quoted[match] || match)}"`
+  return `"${str.replace(/["\\\n\t\r]/g, (match) => quoted[match] || match)}"`
 }
 
 export function formatUnitsOption(

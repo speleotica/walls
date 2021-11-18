@@ -13,12 +13,12 @@ import dedent from 'dedent-js'
 
 function formatGeoreference(georeference: Georeference): string {
   let result = ''
-  writeGeoreference(georeference, data => (result = data))
+  writeGeoreference(georeference, (data) => (result = data))
   return result
 }
 
-describe(`formatGeoreference`, function() {
-  it(`northwest`, function() {
+describe(`formatGeoreference`, function () {
+  it(`northwest`, function () {
     expect(
       formatGeoreference({
         displayLatLongFormat: DisplayLatLongFormat.DegreesMinutesSeconds,
@@ -36,7 +36,7 @@ describe(`formatGeoreference`, function() {
       `.REF\t1976521.000 733560.000 14 0.688 2666 6 17 51 50.507 96 47 45.140 27 "WGS 1984"`
     )
   })
-  it(`southeast`, function() {
+  it(`southeast`, function () {
     expect(
       formatGeoreference({
         displayLatLongFormat: DisplayLatLongFormat.DegreesMinutesSeconds,
@@ -54,7 +54,7 @@ describe(`formatGeoreference`, function() {
       `.REF\t8023478.993 266439.997 -47 0.676 2666 10 17 51 50.507 96 47 45.140 27 "WGS 1984"`
     )
   })
-  it(`southwest`, function() {
+  it(`southwest`, function () {
     expect(
       formatGeoreference({
         displayLatLongFormat: DisplayLatLongFormat.DegreesMinutesSeconds,
@@ -72,7 +72,7 @@ describe(`formatGeoreference`, function() {
       `.REF\t8023478.993 733560.003 -14 -0.676 2666 14 17 51 50.507 96 47 45.140 27 "WGS 1984"`
     )
   })
-  it(`northeast`, function() {
+  it(`northeast`, function () {
     expect(
       formatGeoreference({
         displayLatLongFormat: DisplayLatLongFormat.DegreesMinutesSeconds,
@@ -92,8 +92,8 @@ describe(`formatGeoreference`, function() {
   })
 })
 
-describe(`formatWallsWpjFile`, function() {
-  it(`basic test`, function() {
+describe(`formatWallsWpjFile`, function () {
+  it(`basic test`, function () {
     expect(
       formatWallsWpjFile({
         root: wallsProjectBook(
