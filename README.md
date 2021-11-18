@@ -18,7 +18,7 @@ Types and factory functions for AST nodes of `.srv` (survey) files
 ## [`formatWallsSrvFile`](/src/dat/formatWallsSrvFile.ts)
 
 ```js
-import formatWallsSrvFile from '@speleotica/walls/srv/formatWallsSrvFile'
+import { formatWallsSrvFile } from '@speleotica/walls/srv'
 ```
 
 It takes a `WallsSrvFile`, and optionally an options hash with a `write` function.
@@ -33,7 +33,7 @@ Types and factory functions for AST nodes of `.wpj` (project) files
 ## [`formatWallsWpjFile`](/src/dat/formatWallsWpjFile.ts)
 
 ```js
-import formatWallsWpjFile from '@speleotica/walls/wpj/formatWallsWpjFile'
+import { formatWallsWpjFile } from '@speleotica/walls/wpj'
 ```
 
 It takes a `WallsWpjFile`, and optionally an options hash with a `write` function.
@@ -44,7 +44,7 @@ file write stream.
 ## [`writeWallsProject`](/src/node/writeWallsProject.ts)
 
 ```js
-import writeWallsProject from '@speleotica/walls/node/writeWallsProject'
+import { writeWallsProject } from '@speleotica/walls/node'
 ```
 
 Writes the `.wpj` file and `.srv` files of a project to disk.
