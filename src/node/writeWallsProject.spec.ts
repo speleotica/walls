@@ -9,21 +9,21 @@ import dedent from 'dedent-js'
 import { compassAndTapeShot } from '../srv/WallsSrvFile'
 import { Unitize } from '@speleotica/unitized'
 
-type DirContents = Record<string, any>
+type DirContents = { [entry: string]: string | DirContents }
 
 describe(`writeWallsProject`, function() {
   let testDir = ''
 
   async function readDirContents(dir: string): Promise<DirContents> {
-    const paths = await fs.readdir(dir)
+    const entries = await fs.readdir(dir)
     const result: DirContents = {}
     await Promise.all(
-      paths.map(async p => {
-        const fullPath = Path.resolve(dir, p)
-        if ((await fs.stat(fullPath)).isDirectory()) {
-          result[p] = await readDirContents(fullPath)
+      entries.map(async entry => {
+        const path = Path.resolve(dir, entry)
+        if ((await fs.stat(path)).isDirectory()) {
+          result[entry] = await readDirContents(path)
         } else {
-          result[p] = iconv.decode(await fs.readFile(fullPath), 'win1252')
+          result[entry] = iconv.decode(await fs.readFile(path), 'win1252')
         }
       })
     )
@@ -40,11 +40,21 @@ describe(`writeWallsProject`, function() {
     )
     for (const entry in actual) {
       const subpath = Path.resolve(path, entry)
-      if (typeof actual[entry] === 'string')
-        expect(actual[entry], `contents of ${subpath}`).to.equal(
-          dedent([expected[entry]] as any).replace(/\n/gm, '\r\n') + '\r\n'
+      const actualEntry = actual[entry]
+      const expectedEntry = expected[entry]
+      if (typeof actualEntry === 'string') {
+        if (typeof expectedEntry !== 'string') {
+          throw new Error(`expected ${subpath} to be a directory`)
+        }
+        expect(actualEntry, `contents of ${subpath}`).to.equal(
+          dedent([expectedEntry] as any).replace(/\n/gm, '\r\n') + '\r\n'
         )
-      else expectDirContents(actual[entry], expected[entry], subpath)
+      } else {
+        if (typeof expectedEntry === 'string') {
+          throw new Error(`expected ${subpath} not to be a directory`)
+        }
+        expectDirContents(actualEntry, expectedEntry, subpath)
+      }
     }
   }
 
