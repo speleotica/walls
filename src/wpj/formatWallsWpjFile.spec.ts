@@ -124,6 +124,7 @@ describe(`formatWallsWpjFile`, function () {
               wallsDatumIndex: 27,
               datum: 'WGS 1984',
             },
+            options: 'PREFIX=fr',
           }
         ),
       })
@@ -131,6 +132,7 @@ describe(`formatWallsWpjFile`, function () {
       dedent`
         .BOOK\tFisher Ridge
         .NAME\ttest
+        .OPTIONS\tPREFIX=fr
         .STATUS\t1
         .REF\t1976521.007 266439.997 47 -0.676 2666 2 17 51 50.507 96 47 45.140 27 "WGS 1984"
         .BOOK\tHistoric

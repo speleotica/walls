@@ -59,7 +59,7 @@ export function writeWallsProjectEntry(
     `.${type === WallsProjectEntryType.Book ? 'BOOK' : 'SURVEY'}\t${title}\r\n`
   )
   if (name) write(`.NAME\t${name}\r\n`)
-  if (options) write('.OPTIONS\t${options}\r\n')
+  if (options) write(`.OPTIONS\t${options}\r\n`)
   if (path) write(`.PATH\t${path}\r\n`)
   write(`.STATUS\t${getStatus(entry)}\r\n`)
   if (georeference) {
