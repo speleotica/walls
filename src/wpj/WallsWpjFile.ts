@@ -217,8 +217,8 @@ export interface WallsProjectSurvey extends WallsProjectEntryBase {
 
 export const wallsProjectSurvey = (
   title: string,
-  name: string | null | undefined,
-  path: string | null | undefined,
+  name?: string | null,
+  path?: string | null,
   {
     detached,
     nameDefinesSegment,
@@ -246,8 +246,8 @@ export interface WallsProjectOtherEntry extends WallsProjectEntryBase {
 
 export const wallsProjectOtherEntry = (
   title: string,
-  name: string | null | undefined,
-  path: string | null | undefined,
+  name?: string | null,
+  path?: string | null,
   {
     detached,
     nameDefinesSegment,
@@ -276,9 +276,9 @@ export interface WallsProjectBook extends WallsProjectEntryBase {
 
 export const wallsProjectBook = (
   title: string,
-  name: string | null | undefined,
-  path: string | null | undefined,
-  children: WallsProjectEntry[],
+  name?: string | null,
+  path?: string | null,
+  children: WallsProjectEntry[] = [],
   {
     detached,
     nameDefinesSegment,
