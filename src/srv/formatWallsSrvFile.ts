@@ -113,8 +113,8 @@ export function formatLength(
     }
   }
   const value = length.get(length.unit)
-  return length.unit === defaultUnit
-    ? String(value)
+  return length.unit === defaultUnit ?
+      String(value)
     : `${value}${unitSuffix(length.unit)}`
 }
 
@@ -141,8 +141,8 @@ export function formatAzimuth(
       angle = angle.in(defaultUnit)
   }
   const value = angle.get(angle.unit)
-  return angle.unit === defaultUnit
-    ? String(value)
+  return angle.unit === defaultUnit ?
+      String(value)
     : `${value}${unitSuffix(angle.unit)}`
 }
 
@@ -160,8 +160,8 @@ export function formatInclination(
       angle = angle.in(defaultUnit)
   }
   const value = angle.get(angle.unit)
-  return angle.unit === defaultUnit
-    ? String(value)
+  return angle.unit === defaultUnit ?
+      String(value)
     : `${value}${unitSuffix(angle.unit)}`
 }
 
@@ -531,13 +531,13 @@ function formatInclinations(
   const { frontsightInclinationUnit, backsightInclinationUnit } = settings
   if (backsight) {
     return `${
-      frontsight
-        ? formatInclination(frontsight, frontsightInclinationUnit)
-        : '--'
+      frontsight ?
+        formatInclination(frontsight, frontsightInclinationUnit)
+      : '--'
     }/${formatInclination(backsight, backsightInclinationUnit)}`
   }
-  return frontsight
-    ? formatInclination(frontsight, frontsightInclinationUnit)
+  return frontsight ?
+      formatInclination(frontsight, frontsightInclinationUnit)
     : '--'
 }
 
@@ -614,7 +614,7 @@ export function formatShot(
         )
         parts.push(formatOptionalLength(targetHeight, secondaryDistanceUnit))
       }
-    } else if (measurements.type === ShotType.Rectilinear) {
+    } else {
       const { easting, northing, elevation } = measurements
       for (const item of rectilinearOrder) {
         switch (item) {
@@ -673,8 +673,8 @@ export function formatShot(
 
 export function formatComment({ comment, raw, block }: Comment): string {
   if (raw) return raw.value
-  return block || /[\r\n]/.test(comment)
-    ? `#[\r\n${comment.replace(/\r\n?|\n/gm, '\r\n')}\r\n#]\r\n`
+  return block || /[\r\n]/.test(comment) ?
+      `#[\r\n${comment.replace(/\r\n?|\n/gm, '\r\n')}\r\n#]\r\n`
     : `;${comment}\r\n`
 }
 

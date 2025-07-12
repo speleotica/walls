@@ -1,12 +1,12 @@
 import Path from 'path'
 import fs from 'fs-extra'
 import { describe, it } from 'mocha'
-import writeWallsProject from './writeWallsProject'
-import { wallsProjectBook, wallsProjectSurvey } from '../wpj/WallsWpjFile'
+import writeWallsProject from '../src/node/writeWallsProject'
+import { wallsProjectBook, wallsProjectSurvey } from '../src/wpj/WallsWpjFile'
 import iconv from 'iconv-lite'
 import { expect } from 'chai'
 import dedent from 'dedent-js'
-import { compassAndTapeShot } from '../srv/WallsSrvFile'
+import { compassAndTapeShot } from '../src/srv/WallsSrvFile'
 import { Unitize } from '@speleotica/unitized'
 
 type DirContents = { [entry: string]: string | DirContents }
@@ -64,7 +64,7 @@ describe(`writeWallsProject`, function () {
       '..',
       '..',
       'test',
-      this.currentTest?.fullTitle?.() || ''
+      this.currentTest?.fullTitle() || ''
     )
     await fs.remove(testDir).catch(() => {
       /* no-op */

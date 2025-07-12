@@ -56,7 +56,7 @@ export type SrvSettings = {
   prefix: [
     string | null | undefined,
     string | null | undefined,
-    string | null | undefined
+    string | null | undefined,
   ]
   tapingMethod: TapingMethod
   horizontalUnitVariance: number
@@ -372,7 +372,7 @@ export type LrudStyleOption = {
 }
 export const lrudStyleOption = (
   style: LrudStyle,
-  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null | undefined
+  order?: [LrudItem, LrudItem, LrudItem, LrudItem] | null
 ): LrudStyleOption => ({
   type: UnitsOptionType.LrudStyle,
   style,
@@ -491,7 +491,7 @@ export type UnitsDirective = {
 
 export const unitsDirective = (
   options: UnitsOption[],
-  comment?: string | null | undefined
+  comment?: string | null
 ): UnitsDirective => ({
   type: SrvLineType.UnitsDirective,
   options,
@@ -506,7 +506,7 @@ export type SegmentDirective = {
 }
 export const segmentDirective = (
   segment: string,
-  comment?: string | null | undefined
+  comment?: string | null
 ): SegmentDirective => ({
   type: SrvLineType.SegmentDirective,
   segment,
@@ -580,21 +580,21 @@ export function fixDirective(
   latitude: UnitizedNumber<Angle>,
   longitude: UnitizedNumber<Angle>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions | null | undefined
+  options?: FixDirectiveRestOptions | null
 ): FixDirective
 export function fixDirective(
   station: string,
   easting: UnitizedNumber<Length>,
   northing: UnitizedNumber<Length>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions | null | undefined
+  options?: FixDirectiveRestOptions | null
 ): FixDirective
 export function fixDirective(
   station: string,
   x: UnitizedNumber<Length> | UnitizedNumber<Angle>,
   y: UnitizedNumber<Length> | UnitizedNumber<Angle>,
   elevation: UnitizedNumber<Length>,
-  options?: FixDirectiveRestOptions | null | undefined
+  options?: FixDirectiveRestOptions | null
 ): FixDirective {
   const result: FixDirective = {
     type: SrvLineType.FixDirective,
@@ -625,7 +625,7 @@ export type PrefixDirective = {
 export const prefixDirective = (
   level: 1 | 2 | 3,
   prefix: string | null | undefined,
-  comment?: string | null | undefined
+  comment?: string | null
 ): PrefixDirective => ({
   type: SrvLineType.PrefixDirective,
   level,
@@ -643,7 +643,7 @@ export type NoteDirective = {
 export const noteDirective = (
   station: string,
   note: string,
-  comment?: string | null | undefined
+  comment?: string | null
 ): NoteDirective => ({
   type: SrvLineType.NoteDirective,
   station,
@@ -661,7 +661,7 @@ export type FlagDirective = {
 export const flagDirective = (
   stations: string[],
   flag: string,
-  comment?: string | null | undefined
+  comment?: string | null
 ): FlagDirective => ({
   type: SrvLineType.FlagDirective,
   stations,
@@ -703,8 +703,8 @@ export const symbolDirective = (
   shape: SymbolShape | null | undefined,
   pointSize: number | null | undefined,
   color: Color | null | undefined,
-  flag?: string | null | undefined,
-  comment?: string | null | undefined
+  flag?: string | null,
+  comment?: string | null
 ): SymbolDirective => ({
   type: SrvLineType.SymbolDirective,
   opacity,
@@ -723,7 +723,7 @@ export type DateDirective = {
 }
 export const dateDirective = (
   date: Date,
-  comment?: string | null | undefined
+  comment?: string | null
 ): DateDirective => ({
   type: SrvLineType.DateDirective,
   date,
@@ -795,14 +795,7 @@ type BuilderLruds =
       UnitizedNumber<Length> | null | undefined,
       UnitizedNumber<Length> | null | undefined,
       UnitizedNumber<Length> | null | undefined,
-      UnitizedNumber<Length> | null | undefined
-    ]
-  | [
       UnitizedNumber<Length> | null | undefined,
-      UnitizedNumber<Length> | null | undefined,
-      UnitizedNumber<Length> | null | undefined,
-      UnitizedNumber<Length> | null | undefined,
-      UnitizedNumber<Angle>
     ]
   | [
       UnitizedNumber<Length> | null | undefined,
@@ -810,7 +803,14 @@ type BuilderLruds =
       UnitizedNumber<Length> | null | undefined,
       UnitizedNumber<Length> | null | undefined,
       UnitizedNumber<Angle>,
-      UnitizedNumber<Angle>
+    ]
+  | [
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Length> | null | undefined,
+      UnitizedNumber<Angle>,
+      UnitizedNumber<Angle>,
     ]
 
 export const compassAndTapeShot = (
@@ -821,7 +821,7 @@ export const compassAndTapeShot = (
     | UnitizedNumber<Angle>
     | [
         UnitizedNumber<Angle> | null | undefined,
-        UnitizedNumber<Angle> | null | undefined
+        UnitizedNumber<Angle> | null | undefined,
       ]
     | null
     | undefined,
@@ -829,12 +829,12 @@ export const compassAndTapeShot = (
     | UnitizedNumber<Angle>
     | [
         UnitizedNumber<Angle> | null | undefined,
-        UnitizedNumber<Angle> | null | undefined
+        UnitizedNumber<Angle> | null | undefined,
       ]
     | null
     | undefined,
-  lruds?: BuilderLruds | null | undefined,
-  options?: CompassAndTapeShotRestOptions | null | undefined
+  lruds?: BuilderLruds | null,
+  options?: CompassAndTapeShotRestOptions | null
 ): Shot => {
   const { instrumentHeight, targetHeight, ...rest } = options || {}
   return {
@@ -846,12 +846,10 @@ export const compassAndTapeShot = (
       distance,
       frontsightAzimuth: Array.isArray(azimuth) ? azimuth[0] : azimuth,
       backsightAzimuth: Array.isArray(azimuth) ? azimuth[1] : undefined,
-      frontsightInclination: Array.isArray(inclination)
-        ? inclination[0]
-        : inclination,
-      backsightInclination: Array.isArray(inclination)
-        ? inclination[1]
-        : undefined,
+      frontsightInclination:
+        Array.isArray(inclination) ? inclination[0] : inclination,
+      backsightInclination:
+        Array.isArray(inclination) ? inclination[1] : undefined,
       instrumentHeight,
       targetHeight,
     },
@@ -871,8 +869,8 @@ export const rectilinearShot = (
   easting: UnitizedNumber<Length>,
   northing: UnitizedNumber<Length>,
   elevation: UnitizedNumber<Length>,
-  lruds?: BuilderLruds | null | undefined,
-  options?: ShotRestOptions | null | undefined
+  lruds?: BuilderLruds | null,
+  options?: ShotRestOptions | null
 ): Shot => ({
   type: SrvLineType.Shot,
   from,
@@ -895,8 +893,8 @@ export const rectilinearShot = (
 
 export const stationLruds = (
   station: string,
-  lruds?: BuilderLruds | null | undefined,
-  options?: ShotRestOptions | null | undefined
+  lruds?: BuilderLruds | null,
+  options?: ShotRestOptions | null
 ): Shot => ({
   type: SrvLineType.Shot,
   from: station,

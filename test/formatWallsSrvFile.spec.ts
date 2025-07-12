@@ -12,7 +12,7 @@ import formatWallsSrvFile, {
   formatFlagDirective,
   formatDateDirective,
   formatShot,
-} from './formatWallsSrvFile'
+} from '../src/srv/formatWallsSrvFile'
 import {
   distanceUnitOption,
   primaryDistanceUnitOption,
@@ -72,7 +72,7 @@ import {
   symbolDirective,
   SymbolOpacity,
   SymbolShape,
-} from './WallsSrvFile'
+} from '../src/srv/WallsSrvFile'
 import { Length, Unitize, Angle } from '@speleotica/unitized'
 
 const settings = defaultSrvSettings()

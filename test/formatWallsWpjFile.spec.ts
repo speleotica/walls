@@ -6,8 +6,10 @@ import {
   wallsProjectBook,
   wallsProjectSurvey,
   View,
-} from './WallsWpjFile'
-import formatWallsWpjFile, { writeGeoreference } from './formatWallsWpjFile'
+} from '../src/wpj/WallsWpjFile'
+import formatWallsWpjFile, {
+  writeGeoreference,
+} from '../src/wpj/formatWallsWpjFile'
 import { Unitize } from '@speleotica/unitized'
 import dedent from 'dedent-js'
 
