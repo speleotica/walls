@@ -59,13 +59,7 @@ describe(`writeWallsProject`, function () {
   }
 
   beforeEach(async function () {
-    testDir = Path.resolve(
-      __dirname,
-      '..',
-      '..',
-      'test',
-      this.currentTest?.fullTitle() || ''
-    )
+    testDir = Path.resolve('test', this.currentTest?.fullTitle() || '')
     await fs.remove(testDir).catch(() => {
       /* no-op */
     })
